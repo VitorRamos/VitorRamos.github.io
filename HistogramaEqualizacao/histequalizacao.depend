@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1473033472 source:/home/vitor/Documentos/EngenhariaComputação/7 Semestre/PROCESSAMENTO DIGITAL DE IMAGENS/ContaBuraco/main.cpp
+1473035653 source:/home/vitor/Documentos/EngenhariaComputação/7 Semestre/PROCESSAMENTO DIGITAL DE IMAGENS/HistogramaEqualizacao/main.cpp
 	<iostream>
 	<opencv2/opencv.hpp>
 

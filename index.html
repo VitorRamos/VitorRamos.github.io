@@ -645,7 +645,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="ulist">
 <ul>
 <li>
-<p>Exercício 1 : Observando-se o programa <a href="#labeling">[labeling]</a>.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
+<p>Exercício 1 : Observando-se o programa labeling.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
 </li>
 </ul>
 </div>
@@ -653,7 +653,7 @@ table.CodeRay td.code>pre{padding:0}
 <p>Isso ocorre porque para cada objeto é atribuido um valor de cinza, se a imagem tive mais de 255 objetos o programa vai atribuir valores invalidos de cinza pois a imagem só possui 8 bits, a solução é fixar o valor de cinza dos objetos encontrados</p>
 </div>
 <div class="listingblock">
-<div class="title"><a id="labeling"></a></div>
+<div class="title">Codigo Original</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
 <span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
@@ -667,7 +667,7 @@ table.CodeRay td.code>pre{padding:0}
   <span class="predefined-type">int</span> nobjects;
 
   CvPoint p;
-  image = imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">biel.png</span><span class="delimiter">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE);
+  image = imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">abc.png</span><span class="delimiter">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE);
 
   <span class="keyword">if</span>(!image.data){
     std::cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">imagem nao carregou corretamente</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
@@ -688,7 +688,7 @@ table.CodeRay td.code>pre{padding:0}
                 nobjects++;
                 p.x=j;
                 p.y=i;
-                floodFill(image,p,<span class="integer">50</span>);
+                floodFill(image,p,nobjects);
           }
         }
   }
@@ -700,10 +700,128 @@ table.CodeRay td.code>pre{padding:0}
 }</code></pre>
 </div>
 </div>
+<div class="listingblock">
+<div class="title">Linha Subistituida</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++">...
+floodFill(image,p,<span class="integer">50</span>);
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Imagem Original</div>
+<p><span class="image"><img src="ContaObjeto//abc.png" alt="abc"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado</div>
+<p><span class="image"><img src="ContaObjeto//resultado.png" alt="resultado"></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Exercício 2 : Aprimoração do algoritmo de contagem apresentado para identificar regiões com ou sem buracos internos. Assumindo que objetos com mais de um buraco podem existir. Incluindo suporte no seu algoritmo para não contar bolhas que tocam as bordas da imagem.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+{
+    Mat image, mask;
+    <span class="predefined-type">int</span> width, height;
+    <span class="predefined-type">int</span> nobjects, nobjectshole;
+
+    CvPoint p;
+    image = imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">abc.png</span><span class="delimiter">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE);
+
+    <span class="keyword">if</span>(!image.data)
+    {
+        std::cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">imagem nao carregou corretamente</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+        <span class="keyword">return</span>(-<span class="integer">1</span>);
+    }
+    width=image.size().width;
+    height=image.size().height;
+
+    p.x=<span class="integer">0</span>;
+    p.y=<span class="integer">0</span>;
+
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">ha</span><span class="delimiter">&quot;</span></span>, image);
+    waitKey();
+    <span class="comment">// busca objetos que tocam na borda e preenchem eles com cor de fundo</span>
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;width; i++)
+    {
+        <span class="keyword">if</span>(image.at&lt;uchar&gt;(<span class="integer">0</span>,i) == <span class="integer">255</span>)
+            floodFill(image, cvPoint(i,<span class="integer">0</span>), <span class="integer">0</span>);
+        <span class="keyword">if</span>(image.at&lt;uchar&gt;(height-<span class="integer">1</span>, i) == <span class="integer">255</span>)
+            floodFill(image, cvPoint(i, height-<span class="integer">1</span>), <span class="integer">0</span>);
+    }
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;height; i++)
+    {
+        <span class="keyword">if</span>(image.at&lt;uchar&gt;(i,<span class="integer">0</span>) == <span class="integer">255</span>)
+            floodFill(image, cvPoint(<span class="integer">0</span>,i), <span class="integer">0</span>);
+        <span class="keyword">if</span>(image.at&lt;uchar&gt;(i,width-<span class="integer">1</span>) == <span class="integer">255</span>)
+            floodFill(image, cvPoint(width-<span class="integer">1</span>,i), <span class="integer">0</span>);
+    }
+    <span class="comment">// busca todos os objetos</span>
+    nobjects=<span class="integer">0</span>;
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;height; i++)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;width; j++)
+        {
+            <span class="keyword">if</span>(image.at&lt;uchar&gt;(i,j) == <span class="integer">255</span>)
+            {
+                nobjects++;
+                p.x=j;
+                p.y=i;
+                floodFill(image,p,<span class="integer">100</span>);
+            }
+        }
+    }
+    floodFill(image,cvPoint(<span class="integer">0</span>,<span class="integer">0</span>),<span class="integer">10</span>); <span class="comment">// preenche o fundo com outra cor para encontrar os buracos</span>
+    <span class="comment">// acha os buracos</span>
+    nobjectshole=<span class="integer">0</span>;
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;height; i++)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;width; j++)
+        {
+            <span class="keyword">if</span>(image.at&lt;uchar&gt;(i,j) == <span class="integer">0</span>)
+            {
+                p.x=j;
+                p.y=i;
+                floodFill(image,p, <span class="integer">10</span>); <span class="comment">// preenche o buraco</span>
+                <span class="keyword">if</span>(image.at&lt;uchar&gt;(i, j-<span class="integer">1</span>) == <span class="integer">100</span>) <span class="comment">// evita contar objeto com mais de um buraco</span>
+                {
+                    nobjectshole++;
+                    floodFill(image,cvPoint(p.x-<span class="integer">1</span>,p.y), <span class="integer">70</span>); <span class="comment">// preenche objeto com buraco de outra cor</span>
+                }
+            }
+        }
+    }
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Numero de objetos : </span><span class="delimiter">&quot;</span></span> &lt;&lt; nobjects &lt;&lt; endl
+        &lt;&lt;  <span class="string"><span class="delimiter">&quot;</span><span class="content">Numero de objetos com buraco : </span><span class="delimiter">&quot;</span></span>&lt;&lt; nobjectshole &lt;&lt; endl
+        &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Numero de objetos sem buraco : </span><span class="delimiter">&quot;</span></span> &lt;&lt; nobjects-nobjectshole &lt;&lt; endl;
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">labeling.png</span><span class="delimiter">&quot;</span></span>, image);
+    waitKey();
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado</div>
+<p><span class="image"><img src="ContaBuraco//resultado.png" alt="resultado"></span></p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tarefa_3">Tarefa 3</h2>
+<h2 id="_manipulação_de_histogramas">Manipulação de histogramas</h2>
 <div class="sectionbody">
 
 </div>
@@ -740,7 +858,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-04 20:08:58 BRT
+Last updated 2016-09-04 22:31:53 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">

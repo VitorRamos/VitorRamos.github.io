@@ -31,7 +31,7 @@ int main(int argc, char** argv){
 		nobjects++;
 		p.x=j;
 		p.y=i;
-		floodFill(image,p,50);
+		floodFill(image,p,nobjects);
 	  }
 	}
   }
