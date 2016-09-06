@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     p.x=0;
     p.y=0;
 
-    imshow("ha", image);
+    imshow("Original", image);
     waitKey();
     // busca objetos que tocam na borda e preenchem eles com cor de fundo
     for(int i=0; i<width; i++)
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     cout << "Numero de objetos : " << nobjects << endl
         <<  "Numero de objetos com buraco : "<< nobjectshole << endl
         << "Numero de objetos sem buraco : " << nobjects-nobjectshole << endl;
-    imshow("image", image);
+    imshow("final", image);
     imwrite("labeling.png", image);
     waitKey();
     return 0;

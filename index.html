@@ -508,27 +508,59 @@ table.CodeRay td.code>pre{padding:0}
 .CodeRay .head .head{color:#f4f}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>Processamento Digital de Imagens Exercicios</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_introducao">Introducao</a></li>
+<li><a href="#_manipulando_pixels_em_uma_imagem">Manipulando pixels em uma imagem</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_1">Exercício 1</a></li>
+<li><a href="#_exercício_2">Exercício 2</a></li>
+</ul>
+</li>
+<li><a href="#_preenchendo_regiões">Preenchendo regiões</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_1_2">Exercício 1</a></li>
+<li><a href="#_exercício_2_2">Exercício 2</a></li>
+</ul>
+</li>
+<li><a href="#_manipulação_de_histogramas">Manipulação de histogramas</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_1_3">Exercício 1</a></li>
+<li><a href="#_exercício_2_3">Exercício 2</a></li>
+</ul>
+</li>
+<li><a href="#_conclusão">Conclusão</a></li>
+<li><a href="#_bibliografia">Bibliografia</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Vitor Ramos &lt;<a href="mailto:vitorramos@gmail.com">vitorramos@gmail.com</a>&gt;</p>
+<p>Vitor Ramos &lt;<a href="mailto:vitorramos89@gmail.com">vitorramos89@gmail.com</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introducao">Introducao</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>introducao</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_manipulando_pixels_em_uma_imagem">Manipulando pixels em uma imagem</h2>
 <div class="sectionbody">
-<div class="ulist summary incremental">
-<ul>
-<li>
-<p>Exercício 1 : Implementação de um programa que deverá solicitar ao usuário as coordenadas de dois pontos \$P_1\$ e \$P_2\$ localizados dentro dos limites do tamanho da imagem que lhe for fornecida e exibir. Entretanto, a região definida pelo retângulo de vértices opostos definidos pelos pontos \$P_1\$ e \$P_2\$ será exibida com o negativo da imagem na região correspondente.</p>
-</li>
-</ul>
+<div class="sect2">
+<h3 id="_exercício_1">Exercício 1</h3>
+<div class="paragraph">
+<p>Implementar de um programa que deverá solicitar ao usuário as coordenadas de dois pontos \$P_1\$ e \$P_2\$ localizados dentro dos limites do tamanho da imagem que lhe for fornecida e exibir. Entretanto, a região definida pelo retângulo de vértices opostos definidos pelos pontos \$P_1\$ e \$P_2\$ será exibida com o negativo da imagem na região correspondente.</p>
 </div>
 <div class="listingblock">
 <div class="title">O codigo</div>
@@ -576,12 +608,11 @@ table.CodeRay td.code>pre{padding:0}
 <div class="title">Resultado</div>
 <p><span class="image"><img src="Regioes//resultado.png" alt="resultado"></span></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Exercício 2 : Implementar um programa que deverar trocar aleatoriamente regiões da imagem, formando uma espécie de quebra-cabeças. Explore o uso da classe Mat e seus construtores para criar as regiões que serão trocadas. O efeito é ilustrado na Figura Troca de regiões.</p>
-</li>
-</ul>
+</div>
+<div class="sect2">
+<h3 id="_exercício_2">Exercício 2</h3>
+<div class="paragraph">
+<p>Implementar um programa que deverar trocar aleatoriamente regiões da imagem, formando uma espécie de quebra-cabeças. Explore o uso da classe Mat e seus construtores para criar as regiões que serão trocadas. O efeito é ilustrado na Figura Troca de regiões.</p>
 </div>
 <div class="listingblock">
 <div class="title">O codigo</div>
@@ -634,20 +665,23 @@ table.CodeRay td.code>pre{padding:0}
 <p><span class="image"><img src="TrocaRegioes//abc.jpg" alt="abc"></span></p>
 </div>
 <div class="paragraph">
-<div class="title">Resultado</div>
+<div class="title">Resultado 1</div>
 <p><span class="image"><img src="TrocaRegioes//resultado.png" alt="resultado"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado 2</div>
+<p><span class="image"><img src="TrocaRegioes//resultado2.png" alt="resultado2"></span></p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_preenchendo_regiões">Preenchendo regiões</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>Exercício 1 : Observando-se o programa labeling.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
-</li>
-</ul>
+<div class="sect2">
+<h3 id="_exercício_1_2">Exercício 1</h3>
+<div class="paragraph">
+<p>Observando-se o programa labeling.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
 </div>
 <div class="paragraph">
 <p>Isso ocorre porque para cada objeto é atribuido um valor de cinza, se a imagem tive mais de 255 objetos o programa vai atribuir valores invalidos de cinza pois a imagem só possui 8 bits, a solução é fixar o valor de cinza dos objetos encontrados</p>
@@ -716,12 +750,11 @@ floodFill(image,p,<span class="integer">50</span>);
 <div class="title">Resultado</div>
 <p><span class="image"><img src="ContaObjeto//resultado.png" alt="resultado"></span></p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Exercício 2 : Aprimoração do algoritmo de contagem apresentado para identificar regiões com ou sem buracos internos. Assumindo que objetos com mais de um buraco podem existir. Incluindo suporte no seu algoritmo para não contar bolhas que tocam as bordas da imagem.</p>
-</li>
-</ul>
+</div>
+<div class="sect2">
+<h3 id="_exercício_2_2">Exercício 2</h3>
+<div class="paragraph">
+<p>Aprimoração do algoritmo de contagem apresentado para identificar regiões com ou sem buracos internos. Assumindo que objetos com mais de um buraco podem existir. Incluindo suporte no seu algoritmo para não contar bolhas que tocam as bordas da imagem.</p>
 </div>
 <div class="listingblock">
 <div class="title">O Codigo</div>
@@ -752,7 +785,7 @@ floodFill(image,p,<span class="integer">50</span>);
     p.x=<span class="integer">0</span>;
     p.y=<span class="integer">0</span>;
 
-    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">ha</span><span class="delimiter">&quot;</span></span>, image);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Original</span><span class="delimiter">&quot;</span></span>, image);
     waitKey();
     <span class="comment">// busca objetos que tocam na borda e preenchem eles com cor de fundo</span>
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;width; i++)
@@ -807,7 +840,7 @@ floodFill(image,p,<span class="integer">50</span>);
     cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Numero de objetos : </span><span class="delimiter">&quot;</span></span> &lt;&lt; nobjects &lt;&lt; endl
         &lt;&lt;  <span class="string"><span class="delimiter">&quot;</span><span class="content">Numero de objetos com buraco : </span><span class="delimiter">&quot;</span></span>&lt;&lt; nobjectshole &lt;&lt; endl
         &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Numero de objetos sem buraco : </span><span class="delimiter">&quot;</span></span> &lt;&lt; nobjects-nobjectshole &lt;&lt; endl;
-    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">final</span><span class="delimiter">&quot;</span></span>, image);
     imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">labeling.png</span><span class="delimiter">&quot;</span></span>, image);
     waitKey();
     <span class="keyword">return</span> <span class="integer">0</span>;
@@ -820,23 +853,238 @@ floodFill(image,p,<span class="integer">50</span>);
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="_manipulação_de_histogramas">Manipulação de histogramas</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_1_3">Exercício 1</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/histogram.cpp como referência. Implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem.</p>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
 
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+{
+    Mat image;
+    <span class="predefined-type">int</span> width, height;
+    VideoCapture cap;
+    vector&lt;Mat&gt; planes;
+    Mat histR, histG, histB;
+    <span class="predefined-type">int</span> nbins = <span class="integer">64</span>;
+    <span class="predefined-type">float</span> range[] = {<span class="integer">0</span>, <span class="integer">256</span>};
+    <span class="directive">const</span> <span class="predefined-type">float</span> *histrange = { range };
+    <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
+    <span class="predefined-type">bool</span> acummulate = <span class="predefined-constant">false</span>;
+
+    cap.open(<span class="integer">0</span>);
+
+    <span class="keyword">if</span>(!cap.isOpened())
+    {
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">cameras indisponiveis</span><span class="delimiter">&quot;</span></span>;
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+    }
+
+    width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+    height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">largura = </span><span class="delimiter">&quot;</span></span> &lt;&lt; width &lt;&lt; endl;
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">altura  = </span><span class="delimiter">&quot;</span></span> &lt;&lt; height &lt;&lt; endl;
+
+    <span class="predefined-type">int</span> histw = nbins, histh = nbins/<span class="integer">2</span>;
+    Mat histImgR(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+    Mat histImgG(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+    Mat histImgB(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+
+    <span class="keyword">while</span>(<span class="integer">1</span>)
+    {
+        cap &gt;&gt; image;
+<span class="comment">//        Mat ycrcb;</span>
+<span class="comment">//        cvtColor(image,ycrcb,CV_BGR2YCrCb);</span>
+<span class="comment">//        vector&lt;Mat&gt; channels;</span>
+<span class="comment">//        split(ycrcb,channels);</span>
+<span class="comment">//        equalizeHist(channels[0], channels[0]);</span>
+<span class="comment">//        merge(channels,ycrcb);</span>
+<span class="comment">//        cvtColor(ycrcb,image,CV_YCrCb2BGR);</span>
+        split (image, planes);
+        equalizeHist(planes[<span class="integer">0</span>], planes[<span class="integer">0</span>]);
+        equalizeHist(planes[<span class="integer">1</span>], planes[<span class="integer">1</span>]);
+        equalizeHist(planes[<span class="integer">2</span>], planes[<span class="integer">2</span>]);
+        merge(planes, image);
+        calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histR, <span class="integer">1</span>,
+                 &amp;nbins, &amp;histrange,
+                 uniform, acummulate);
+        calcHist(&amp;planes[<span class="integer">1</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
+                 &amp;nbins, &amp;histrange,
+                 uniform, acummulate);
+
+        calcHist(&amp;planes[<span class="integer">2</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histB, <span class="integer">1</span>,
+                 &amp;nbins, &amp;histrange,
+                 uniform, acummulate);
+
+        normalize(histR, histR, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+        normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+        normalize(histB, histB, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+
+        histImgR.setTo(Scalar(<span class="integer">0</span>));
+        histImgG.setTo(Scalar(<span class="integer">0</span>));
+        histImgB.setTo(Scalar(<span class="integer">0</span>));
+
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;nbins; i++)
+        {
+            line(histImgR, Point(i, histh),
+                 Point(i, histh-cvRound(histR.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+                 Scalar(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">255</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+            line(histImgG, Point(i, histh),
+                 Point(i, histh-cvRound(histG.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+                 Scalar(<span class="integer">0</span>, <span class="integer">255</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+            line(histImgB, Point(i, histh),
+                 Point(i, histh-cvRound(histB.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+                 Scalar(<span class="integer">255</span>, <span class="integer">0</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+        }
+        histImgR.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">0</span>,nbins, histh)));
+        histImgG.copyTo(image(Rect(<span class="integer">0</span>, histh,nbins, histh)));
+        histImgB.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">2</span>*histh,nbins, histh)));
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
+    }
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercício_2_3">Exercício 2</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.</p>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+{
+    Mat image;
+    <span class="predefined-type">int</span> width, height;
+    VideoCapture cap;
+    vector&lt;Mat&gt; planes;
+    Mat histR, histG, histB;
+    <span class="predefined-type">int</span> nbins = <span class="integer">256</span>;
+    <span class="predefined-type">float</span> range[] = {<span class="integer">0</span>, <span class="integer">256</span>};
+    <span class="directive">const</span> <span class="predefined-type">float</span> *histrange = { range };
+    <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
+    <span class="predefined-type">bool</span> acummulate = <span class="predefined-constant">false</span>;
+
+    cap.open(<span class="integer">0</span>);
+
+    <span class="keyword">if</span>(!cap.isOpened())
+    {
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">cameras indisponiveis</span><span class="delimiter">&quot;</span></span>;
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+    }
+
+    width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+    height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">largura = </span><span class="delimiter">&quot;</span></span> &lt;&lt; width &lt;&lt; endl;
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">altura  = </span><span class="delimiter">&quot;</span></span> &lt;&lt; height &lt;&lt; endl;
+
+    <span class="predefined-type">int</span> histw = nbins, histh = nbins/<span class="integer">2</span>;
+    Mat histImgR(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+    Mat histImgG(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+    Mat histImgB(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+
+    vector&lt;Mat&gt; prevHist;
+    prevHist.resize(<span class="integer">3</span>);
+    <span class="predefined-type">double</span> tempo= time(<span class="predefined-constant">NULL</span>);
+    <span class="keyword">while</span>(<span class="integer">1</span>)
+    {
+<span class="comment">//        Mat histR, histG, histB;</span>
+        cap &gt;&gt; image;
+<span class="comment">//        Mat ycrcb;</span>
+<span class="comment">//        cvtColor(image,ycrcb,CV_BGR2YCrCb);</span>
+<span class="comment">//        vector&lt;Mat&gt; channels;</span>
+<span class="comment">//        split(ycrcb,channels);</span>
+<span class="comment">//        equalizeHist(channels[0], channels[0]);</span>
+<span class="comment">//        merge(channels,ycrcb);</span>
+<span class="comment">//        cvtColor(ycrcb,image,CV_YCrCb2BGR);</span>
+
+        split (image, planes);
+        equalizeHist(planes[<span class="integer">0</span>], planes[<span class="integer">0</span>]);
+        equalizeHist(planes[<span class="integer">1</span>], planes[<span class="integer">1</span>]);
+        equalizeHist(planes[<span class="integer">2</span>], planes[<span class="integer">2</span>]);
+        merge(planes, image);
+        calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histR, <span class="integer">1</span>,
+                 &amp;nbins, &amp;histrange,
+                 uniform, acummulate);
+        calcHist(&amp;planes[<span class="integer">1</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
+                 &amp;nbins, &amp;histrange,
+                 uniform, acummulate);
+
+        calcHist(&amp;planes[<span class="integer">2</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histB, <span class="integer">1</span>,
+                 &amp;nbins, &amp;histrange,
+                 uniform, acummulate);
+
+        normalize(histR, histR, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+        normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+        normalize(histB, histB, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+
+        histImgR.setTo(Scalar(<span class="integer">0</span>));
+        histImgG.setTo(Scalar(<span class="integer">0</span>));
+        histImgB.setTo(Scalar(<span class="integer">0</span>));
+
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;nbins; i++)
+        {
+            line(histImgR, Point(i, histh),
+                 Point(i, histh-cvRound(histR.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+                 Scalar(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">255</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+            line(histImgG, Point(i, histh),
+                 Point(i, histh-cvRound(histG.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+                 Scalar(<span class="integer">0</span>, <span class="integer">255</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+            line(histImgB, Point(i, histh),
+                 Point(i, histh-cvRound(histB.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+                 Scalar(<span class="integer">255</span>, <span class="integer">0</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+        }
+        histImgR.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">0</span>,nbins, histh)));
+        histImgG.copyTo(image(Rect(<span class="integer">0</span>, histh,nbins, histh)));
+        histImgB.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">2</span>*histh,nbins, histh)));
+
+        <span class="keyword">if</span>(prevHist[<span class="integer">0</span>].data)
+        {
+            cout &lt;&lt; compareHist(histR, prevHist[<span class="integer">0</span>], CV_COMP_CORREL) &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span>
+            &lt;&lt; compareHist(histG, prevHist[<span class="integer">1</span>], CV_COMP_CORREL) &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span>
+            &lt;&lt; compareHist(histB, prevHist[<span class="integer">2</span>], CV_COMP_CORREL)&lt;&lt; endl;
+        }
+        prevHist[<span class="integer">0</span>]= histR.clone();
+        prevHist[<span class="integer">1</span>]= histG.clone();
+        prevHist[<span class="integer">2</span>]= histB.clone();
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
+    }
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tarefa_4">Tarefa 4</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1 github io/tutoriais/pdi/">
 <h2 id="_conclusão">Conclusão</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>bla bla</p>
+<p>conclusao</p>
 </div>
 </div>
 </div>
@@ -858,7 +1106,7 @@ floodFill(image,p,<span class="integer">50</span>);
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-04 22:31:53 BRT
+Last updated 2016-09-05 23:00:49 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">

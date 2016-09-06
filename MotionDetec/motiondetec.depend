@@ -162,3 +162,7 @@
 	<set>
 	<valarray>
 
+1473072446 source:/home/vitor/Área de Trabalho/VitorRamos.github.io/MotionDetec/main.cpp
+	<iostream>
+	<opencv2/opencv.hpp>
+

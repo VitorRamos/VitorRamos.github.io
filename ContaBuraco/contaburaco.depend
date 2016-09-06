@@ -162,3 +162,7 @@
 	<set>
 	<valarray>
 
+1473033472 source:/home/vitor/Área de Trabalho/VitorRamos.github.io/ContaBuraco/main.cpp
+	<iostream>
+	<opencv2/opencv.hpp>
+
