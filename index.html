@@ -538,7 +538,6 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_exercício_1_4">Exercício 1</a></li>
 </ul>
 </li>
-<li><a href="#_conclusão">Conclusão</a></li>
 <li><a href="#_bibliografia">Bibliografia</a></li>
 </ul>
 </div>
@@ -1007,7 +1006,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
     VideoCapture cap;
     vector&lt;Mat&gt; planes;
     Mat histR;
-    <span class="predefined-type">int</span> nbins = <span class="integer">64</span>;
+    <span class="predefined-type">int</span> nbins = <span class="integer">256</span>;
     <span class="predefined-type">float</span> range[] = {<span class="integer">0</span>, <span class="integer">256</span>};
     <span class="directive">const</span> <span class="predefined-type">float</span> *histrange = { range };
     <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
@@ -1055,12 +1054,12 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
         {
             movimento= <span class="predefined-constant">false</span>; <span class="comment">// movimento inicialmente falso</span>
             <span class="comment">// verifica se existe uma diferenca muito grande</span>
-            <span class="keyword">if</span>(compareHist(histR, prevHist[<span class="integer">0</span>], CV_COMP_CHISQR)&gt;<span class="integer">10</span>)
+            <span class="keyword">if</span>(compareHist(histR, prevHist[<span class="integer">0</span>], CV_COMP_CHISQR)&gt;<span class="integer">100</span>)
                 movimento= <span class="predefined-constant">true</span>;
         }
         <span class="keyword">if</span>(movimento) <span class="comment">// se tiver movimento escreve na tela</span>
         {
-            putText(image, <span class="string"><span class="delimiter">&quot;</span><span class="content">Movimento Detectado.</span><span class="delimiter">&quot;</span></span>, cvPoint(<span class="integer">1</span>,<span class="integer">110</span>),
+            putText(image, <span class="string"><span class="delimiter">&quot;</span><span class="content">Movimento Detectado.</span><span class="delimiter">&quot;</span></span>, cvPoint(<span class="integer">1</span>,<span class="integer">150</span>),
                 FONT_HERSHEY_COMPLEX_SMALL, <span class="float">0</span><span class="float">.8</span>, cvScalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">250</span>), <span class="integer">1</span>, CV_AA);
         }
         <span class="keyword">if</span>(contFrame&gt;<span class="integer">15</span>) <span class="comment">// atualiza histograma de comparacao a cada 15 frames</span>
@@ -1075,6 +1074,10 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
     <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado</div>
+<p><span class="image"><img src="MotionDetec//resultado.gif" alt="resultado"></span></p>
 </div>
 </div>
 </div>
@@ -1253,14 +1256,9 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 <div class="title">Resultado utilizando filtro laplaciano do gaussiano</div>
 <p><span class="image"><img src="Laplgauss//lagauss.png" alt="lagauss"></span></p>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_conclusão">Conclusão</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>conclusao</p>
+<p>foi verificado que ao utilizar o filtro gaussiano antes do laplaciano faz muito diferença pois o filtro gaussiano elimina pequenos ruidos que existem na imagem e o laplaciano consegue distinguir melhor as bordas</p>
+</div>
 </div>
 </div>
 </div>
@@ -1282,7 +1280,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-08 21:41:02 BRT
+Last updated 2016-09-08 22:50:12 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">

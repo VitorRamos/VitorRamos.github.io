@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     VideoCapture cap;
     vector<Mat> planes;
     Mat histR;
-    int nbins = 64;
+    int nbins = 256;
     float range[] = {0, 256};
     const float *histrange = { range };
     bool uniform = true;
@@ -59,12 +59,12 @@ int main(int argc, char** argv)
         {
             movimento= false; // movimento inicialmente falso
             // verifica se existe uma diferenca muito grande
-            if(compareHist(histR, prevHist[0], CV_COMP_CHISQR)>10)
+            if(compareHist(histR, prevHist[0], CV_COMP_CHISQR)>100)
                 movimento= true;
         }
         if(movimento) // se tiver movimento escreve na tela
         {
-            putText(image, "Movimento Detectado.", cvPoint(1,110),
+            putText(image, "Movimento Detectado.", cvPoint(1,150),
                 FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(0,0,250), 1, CV_AA);
         }
         if(contFrame>15) // atualiza histograma de comparacao a cada 15 frames
