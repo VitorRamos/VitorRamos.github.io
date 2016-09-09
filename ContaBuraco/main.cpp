@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 
     imshow("Original", image);
     waitKey();
-    // busca objetos que tocam na borda e preenchem eles com cor de fundo
+    // busca objetos que tocam na borda e preenchem eles com cor de fundo 0
     for(int i=0; i<width; i++)
     {
         if(image.at<uchar>(0,i) == 255)
@@ -56,8 +56,9 @@ int main(int argc, char** argv)
             }
         }
     }
-    floodFill(image,cvPoint(0,0),10); // preenche o fundo com outra cor para encontrar os buracos
-    // acha os buracos
+    // preenche o fundo com outra cor para encontrar os buracos
+    floodFill(image,cvPoint(0,0),10);
+    // acha objetos com buracos
     nobjectshole=0;
     for(int i=0; i<height; i++)
     {
@@ -68,10 +69,12 @@ int main(int argc, char** argv)
                 p.x=j;
                 p.y=i;
                 floodFill(image,p, 10); // preenche o buraco
-                if(image.at<uchar>(i, j-1) == 100) // evita contar objeto com mais de um buraco
+                // evita contar objeto com mais de um buraco
+                if(image.at<uchar>(i, j-1) == 100)
                 {
                     nobjectshole++;
-                    floodFill(image,cvPoint(p.x-1,p.y), 70); // preenche objeto com buraco de outra cor
+                    // preenche objeto com buraco de outra cor
+                    floodFill(image,cvPoint(p.x-1,p.y), 70);
                 }
             }
         }

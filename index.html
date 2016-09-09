@@ -533,6 +533,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_exercício_2_3">Exercício 2</a></li>
 </ul>
 </li>
+<li><a href="#_filtragem_no_domínio_espacial">Filtragem no domínio espacial</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_1_4">Exercício 1</a></li>
+</ul>
+</li>
 <li><a href="#_conclusão">Conclusão</a></li>
 <li><a href="#_bibliografia">Bibliografia</a></li>
 </ul>
@@ -576,7 +581,7 @@ table.CodeRay td.code>pre{padding:0}
 {
     Mat image;
     Vec3b val;
-    image= imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">biel.png</span><span class="delimiter">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE);
+    image= imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">biel.png</span><span class="delimiter">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE); <span class="comment">// carrega a imagem biel.png</span>
     <span class="keyword">if</span>(!image.data)
         cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">nao abriu biel.png</span><span class="delimiter">&quot;</span></span> &lt;&lt; endl;
     namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">janela</span><span class="delimiter">&quot;</span></span>,WINDOW_AUTOSIZE);
@@ -589,10 +594,11 @@ table.CodeRay td.code>pre{padding:0}
         cin &gt;&gt; p2.x &gt;&gt; p2.y;
     }<span class="keyword">while</span>(p1.x &gt; image.size().width || p2.x &gt; image.size().width  ||
           p2.y &gt; image.size().height || p2.y &gt; image.size().height ||
-          p1.x &gt; p2.x || p1.y &gt; p2.y || p1.x &lt; <span class="integer">0</span> || p1.y &lt; <span class="integer">0</span> || p2.x &lt; <span class="integer">0</span> || p2.y &lt; <span class="integer">0</span>); <span class="comment">// enquato os pontos nao sao validos</span>
+          p1.x &gt; p2.x || p1.y &gt; p2.y || p1.x &lt; <span class="integer">0</span> || p1.y &lt; <span class="integer">0</span> || p2.x &lt; <span class="integer">0</span> || p2.y &lt; <span class="integer">0</span>);
+    <span class="comment">// fica no while enquato os pontos nao sao validos</span>
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=p1.x; i&lt;p2.x; i++)
         <span class="keyword">for</span>(<span class="predefined-type">int</span> j=p1.y; j&lt;p2.y; j++)
-            image.at&lt;uchar&gt;(j, i)= <span class="integer">255</span>-image.at&lt;uchar&gt;(j, i); <span class="comment">// inverte o valor do pixel</span>
+            image.at&lt;uchar&gt;(j, i)= <span class="integer">255</span>-image.at&lt;uchar&gt;(j, i);<span class="comment">//inverte o valor do pixel dentro da regiao</span>
     imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">janela</span><span class="delimiter">&quot;</span></span>, image);
     imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">biel2.png</span><span class="delimiter">&quot;</span></span>, image); <span class="comment">// salva a imagem</span>
     waitKey();
@@ -640,17 +646,18 @@ table.CodeRay td.code>pre{padding:0}
     namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">janela</span><span class="delimiter">&quot;</span></span>,WINDOW_AUTOSIZE);
 
     cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Digite o Numero de Regioes : </span><span class="delimiter">&quot;</span></span>;
-    cin &gt;&gt; n;
+    cin &gt;&gt; n; <span class="comment">// numero de divisoes em uma linha</span>
     <span class="predefined-type">int</span> wr= image.size().width/n, hr= image.size().height/n;
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;n; i++)
     {
         <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;n; j++)
         {
-            <span class="predefined-type">int</span> rx= rand()%n, ry= rand()%n;
-            Mat randpos= image(Rect(wr*rx,hr*ry,wr,hr));
-            Mat aux= image(Rect(wr*i,hr*j,wr, hr)).clone();
-            randpos.copyTo(image(Rect(wr*i,hr*j,wr, hr)));
-            aux.copyTo(image(Rect(wr*rx,hr*ry,wr,hr)));
+            <span class="comment">// A ideia e pegar cada regiao e trocar com uma regiao aleatoria na imagem</span>
+            <span class="predefined-type">int</span> rx= rand()%n, ry= rand()%n; <span class="comment">// duas posicoes aleatorias de regioes</span>
+            Mat randpos= image(Rect(wr*rx,hr*ry,wr,hr)); <span class="comment">// a regiao escolhida aleatoriamente</span>
+            Mat aux= image(Rect(wr*i,hr*j,wr, hr)).clone(); <span class="comment">// a regiao atual</span>
+            randpos.copyTo(image(Rect(wr*i,hr*j,wr, hr))); <span class="comment">// copia a regiao aleatoria na regiao atual</span>
+            aux.copyTo(image(Rect(wr*rx,hr*ry,wr,hr))); <span class="comment">// copia a regial atual na regiao aleatoria</span>
         }
     }
     imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">janela</span><span class="delimiter">&quot;</span></span>, image);
@@ -684,10 +691,10 @@ table.CodeRay td.code>pre{padding:0}
 <p>Observando-se o programa labeling.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
 </div>
 <div class="paragraph">
-<p>Isso ocorre porque para cada objeto é atribuido um valor de cinza, se a imagem tive mais de 255 objetos o programa vai atribuir valores invalidos de cinza pois a imagem só possui 8 bits, a solução é fixar o valor de cinza dos objetos encontrados</p>
+<p>Solucao : Isso ocorre porque para cada objeto é atribuido um valor de cinza, se a imagem tive mais de 255 objetos o programa vai atribuir valores invalidos de cinza pois a imagem só possui 8 bits, a solução é fixar o valor de cinza dos objetos encontrados assim o programa podera classificar quantos objetos tiver na imagem.</p>
 </div>
 <div class="listingblock">
-<div class="title">Codigo Original</div>
+<div class="title">Codigo Modificado</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
 <span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
@@ -722,7 +729,8 @@ table.CodeRay td.code>pre{padding:0}
                 nobjects++;
                 p.x=j;
                 p.y=i;
-                floodFill(image,p,nobjects);
+                floodFill(image,p,<span class="integer">50</span>);
+                <span class="comment">// foi trocado floodFill(image,p,nobjects);</span>
           }
         }
   }
@@ -732,14 +740,6 @@ table.CodeRay td.code>pre{padding:0}
   waitKey();
   <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">Linha Subistituida</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="c++">...
-floodFill(image,p,<span class="integer">50</span>);
-...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -787,7 +787,7 @@ floodFill(image,p,<span class="integer">50</span>);
 
     imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Original</span><span class="delimiter">&quot;</span></span>, image);
     waitKey();
-    <span class="comment">// busca objetos que tocam na borda e preenchem eles com cor de fundo</span>
+    <span class="comment">// busca objetos que tocam na borda e preenchem eles com cor de fundo 0</span>
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;width; i++)
     {
         <span class="keyword">if</span>(image.at&lt;uchar&gt;(<span class="integer">0</span>,i) == <span class="integer">255</span>)
@@ -817,8 +817,9 @@ floodFill(image,p,<span class="integer">50</span>);
             }
         }
     }
-    floodFill(image,cvPoint(<span class="integer">0</span>,<span class="integer">0</span>),<span class="integer">10</span>); <span class="comment">// preenche o fundo com outra cor para encontrar os buracos</span>
-    <span class="comment">// acha os buracos</span>
+    <span class="comment">// preenche o fundo com outra cor para encontrar os buracos</span>
+    floodFill(image,cvPoint(<span class="integer">0</span>,<span class="integer">0</span>),<span class="integer">10</span>);
+    <span class="comment">// acha objetos com buracos</span>
     nobjectshole=<span class="integer">0</span>;
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;height; i++)
     {
@@ -829,10 +830,12 @@ floodFill(image,p,<span class="integer">50</span>);
                 p.x=j;
                 p.y=i;
                 floodFill(image,p, <span class="integer">10</span>); <span class="comment">// preenche o buraco</span>
-                <span class="keyword">if</span>(image.at&lt;uchar&gt;(i, j-<span class="integer">1</span>) == <span class="integer">100</span>) <span class="comment">// evita contar objeto com mais de um buraco</span>
+                <span class="comment">// evita contar objeto com mais de um buraco</span>
+                <span class="keyword">if</span>(image.at&lt;uchar&gt;(i, j-<span class="integer">1</span>) == <span class="integer">100</span>)
                 {
                     nobjectshole++;
-                    floodFill(image,cvPoint(p.x-<span class="integer">1</span>,p.y), <span class="integer">70</span>); <span class="comment">// preenche objeto com buraco de outra cor</span>
+                    <span class="comment">// preenche objeto com buraco de outra cor</span>
+                    floodFill(image,cvPoint(p.x-<span class="integer">1</span>,p.y), <span class="integer">70</span>);
                 }
             }
         }
@@ -849,7 +852,8 @@ floodFill(image,p,<span class="integer">50</span>);
 </div>
 <div class="paragraph">
 <div class="title">Resultado</div>
-<p><span class="image"><img src="ContaBuraco//resultado.png" alt="resultado"></span></p>
+<p><span class="image"><img src="ContaBuraco//resultado.png" alt="resultado"></span>
+Para testar o codigo foram criados objetos com mais de um buraco e o programa contou ele apenas uma vez como esperado</p>
 </div>
 </div>
 </div>
@@ -862,108 +866,8 @@ floodFill(image,p,<span class="integer">50</span>);
 <div class="paragraph">
 <p>Utilizando o programa exemplos/histogram.cpp como referência. Implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem.</p>
 </div>
-<div class="listingblock">
-<div class="title">O Codigo</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
-<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
-
-<span class="directive">using</span> <span class="keyword">namespace</span> cv;
-<span class="directive">using</span> <span class="keyword">namespace</span> std;
-
-<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
-{
-    Mat image;
-    <span class="predefined-type">int</span> width, height;
-    VideoCapture cap;
-    vector&lt;Mat&gt; planes;
-    Mat histR, histG, histB;
-    <span class="predefined-type">int</span> nbins = <span class="integer">64</span>;
-    <span class="predefined-type">float</span> range[] = {<span class="integer">0</span>, <span class="integer">256</span>};
-    <span class="directive">const</span> <span class="predefined-type">float</span> *histrange = { range };
-    <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
-    <span class="predefined-type">bool</span> acummulate = <span class="predefined-constant">false</span>;
-
-    cap.open(<span class="integer">0</span>);
-
-    <span class="keyword">if</span>(!cap.isOpened())
-    {
-        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">cameras indisponiveis</span><span class="delimiter">&quot;</span></span>;
-        <span class="keyword">return</span> -<span class="integer">1</span>;
-    }
-
-    width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
-    height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
-
-    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">largura = </span><span class="delimiter">&quot;</span></span> &lt;&lt; width &lt;&lt; endl;
-    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">altura  = </span><span class="delimiter">&quot;</span></span> &lt;&lt; height &lt;&lt; endl;
-
-    <span class="predefined-type">int</span> histw = nbins, histh = nbins/<span class="integer">2</span>;
-    Mat histImgR(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
-    Mat histImgG(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
-    Mat histImgB(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
-
-    <span class="keyword">while</span>(<span class="integer">1</span>)
-    {
-        cap &gt;&gt; image;
-<span class="comment">//        Mat ycrcb;</span>
-<span class="comment">//        cvtColor(image,ycrcb,CV_BGR2YCrCb);</span>
-<span class="comment">//        vector&lt;Mat&gt; channels;</span>
-<span class="comment">//        split(ycrcb,channels);</span>
-<span class="comment">//        equalizeHist(channels[0], channels[0]);</span>
-<span class="comment">//        merge(channels,ycrcb);</span>
-<span class="comment">//        cvtColor(ycrcb,image,CV_YCrCb2BGR);</span>
-        split (image, planes);
-        equalizeHist(planes[<span class="integer">0</span>], planes[<span class="integer">0</span>]);
-        equalizeHist(planes[<span class="integer">1</span>], planes[<span class="integer">1</span>]);
-        equalizeHist(planes[<span class="integer">2</span>], planes[<span class="integer">2</span>]);
-        merge(planes, image);
-        calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histR, <span class="integer">1</span>,
-                 &amp;nbins, &amp;histrange,
-                 uniform, acummulate);
-        calcHist(&amp;planes[<span class="integer">1</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
-                 &amp;nbins, &amp;histrange,
-                 uniform, acummulate);
-
-        calcHist(&amp;planes[<span class="integer">2</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histB, <span class="integer">1</span>,
-                 &amp;nbins, &amp;histrange,
-                 uniform, acummulate);
-
-        normalize(histR, histR, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
-        normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
-        normalize(histB, histB, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
-
-        histImgR.setTo(Scalar(<span class="integer">0</span>));
-        histImgG.setTo(Scalar(<span class="integer">0</span>));
-        histImgB.setTo(Scalar(<span class="integer">0</span>));
-
-        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;nbins; i++)
-        {
-            line(histImgR, Point(i, histh),
-                 Point(i, histh-cvRound(histR.at&lt;<span class="predefined-type">float</span>&gt;(i))),
-                 Scalar(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">255</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
-            line(histImgG, Point(i, histh),
-                 Point(i, histh-cvRound(histG.at&lt;<span class="predefined-type">float</span>&gt;(i))),
-                 Scalar(<span class="integer">0</span>, <span class="integer">255</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
-            line(histImgB, Point(i, histh),
-                 Point(i, histh-cvRound(histB.at&lt;<span class="predefined-type">float</span>&gt;(i))),
-                 Scalar(<span class="integer">255</span>, <span class="integer">0</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
-        }
-        histImgR.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">0</span>,nbins, histh)));
-        histImgG.copyTo(image(Rect(<span class="integer">0</span>, histh,nbins, histh)));
-        histImgB.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">2</span>*histh,nbins, histh)));
-        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
-        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
-    }
-    <span class="keyword">return</span> <span class="integer">0</span>;
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_exercício_2_3">Exercício 2</h3>
 <div class="paragraph">
-<p>Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.</p>
+<p>o programa a seguir equaliza os 3 canais de cores RGB individualmente</p>
 </div>
 <div class="listingblock">
 <div class="title">O Codigo</div>
@@ -974,11 +878,8 @@ floodFill(image,p,<span class="integer">50</span>);
 <span class="directive">using</span> <span class="keyword">namespace</span> cv;
 <span class="directive">using</span> <span class="keyword">namespace</span> std;
 
-<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+<span class="directive">void</span> MostraHist(Mat &amp;image, <span class="predefined-type">bool</span> equaliza= <span class="predefined-constant">false</span>)
 {
-    Mat image;
-    <span class="predefined-type">int</span> width, height;
-    VideoCapture cap;
     vector&lt;Mat&gt; planes;
     Mat histR, histG, histB;
     <span class="predefined-type">int</span> nbins = <span class="integer">256</span>;
@@ -987,6 +888,132 @@ floodFill(image,p,<span class="integer">50</span>);
     <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
     <span class="predefined-type">bool</span> acummulate = <span class="predefined-constant">false</span>;
 
+    <span class="predefined-type">int</span> histw = nbins, histh = nbins/<span class="integer">2</span>;
+    Mat histImgR(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+    Mat histImgG(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+    Mat histImgB(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
+
+    split (image, planes);
+    <span class="keyword">if</span>(equaliza) <span class="comment">// equaliza os 3 planos R G B</span>
+    {
+        equalizeHist(planes[<span class="integer">0</span>], planes[<span class="integer">0</span>]);
+        equalizeHist(planes[<span class="integer">1</span>], planes[<span class="integer">1</span>]);
+        equalizeHist(planes[<span class="integer">2</span>], planes[<span class="integer">2</span>]);
+    }
+    merge(planes, image); <span class="comment">// junta os planos novamente na imagem</span>
+    calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histR, <span class="integer">1</span>,
+             &amp;nbins, &amp;histrange,
+             uniform, acummulate);
+    calcHist(&amp;planes[<span class="integer">1</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
+             &amp;nbins, &amp;histrange,
+             uniform, acummulate);
+
+    calcHist(&amp;planes[<span class="integer">2</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histB, <span class="integer">1</span>,
+             &amp;nbins, &amp;histrange,
+             uniform, acummulate);
+
+    normalize(histR, histR, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+    normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+    normalize(histB, histB, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
+
+    histImgR.setTo(Scalar(<span class="integer">0</span>));
+    histImgG.setTo(Scalar(<span class="integer">0</span>));
+    histImgB.setTo(Scalar(<span class="integer">0</span>));
+
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;nbins; i++)
+    {
+        line(histImgR, Point(i, histh),
+             Point(i, histh-cvRound(histR.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+             Scalar(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">255</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+        line(histImgG, Point(i, histh),
+             Point(i, histh-cvRound(histG.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+             Scalar(<span class="integer">0</span>, <span class="integer">255</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+        line(histImgB, Point(i, histh),
+             Point(i, histh-cvRound(histB.at&lt;<span class="predefined-type">float</span>&gt;(i))),
+             Scalar(<span class="integer">255</span>, <span class="integer">0</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
+    }
+    histImgR.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">0</span>,nbins, histh)));
+    histImgG.copyTo(image(Rect(<span class="integer">0</span>, histh,nbins, histh)));
+    histImgB.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">2</span>*histh,nbins, histh)));
+}
+
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+{
+    Mat image;
+    <span class="predefined-type">int</span> width, height;
+    VideoCapture cap;
+    cap.open(<span class="integer">0</span>);
+    <span class="keyword">if</span>(!cap.isOpened())
+    {
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">cameras indisponiveis</span><span class="delimiter">&quot;</span></span>;
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+    }
+
+    width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+    height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">largura = </span><span class="delimiter">&quot;</span></span> &lt;&lt; width &lt;&lt; endl;
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">altura  = </span><span class="delimiter">&quot;</span></span> &lt;&lt; height &lt;&lt; endl;
+
+    <span class="keyword">while</span>(<span class="integer">1</span>)
+    {
+        cap &gt;&gt; image;
+        resize(image, image, Size(<span class="integer">640</span>,<span class="integer">480</span>));
+        MostraHist(image);
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Original</span><span class="delimiter">&quot;</span></span>, image);
+        MostraHist(image, <span class="integer">1</span>);
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
+    }
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado utilizando 64 beans</div>
+<p><span class="image"><img src="HistogramaEqualizacao//resultado64beans.png" alt="resultado64beans"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultados utilizando 256 beans</div>
+<p><span class="image"><img src="HistogramaEqualizacao//resultado256beans.png" alt="resultado256beans"></span>
+<span class="image"><img src="HistogramaEqualizacao//resultado256_2beans.png" alt="resultado256 2beans"></span></p>
+</div>
+<div class="paragraph">
+<p>é possivel obervar a homogeneização do histograma e as cores mais vivas</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercício_2_3">Exercício 2</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.</p>
+</div>
+<div class="paragraph">
+<p>O programa utiliza apenas o canal R para calcular a diferença do histograma, e a diferença e calculada pela função chi-quadrado \$\sum_{k=1}^{\n} (histR[k]-prevHistR[k])^2/(histR[k])\$</p>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+{
+    Mat image;
+    <span class="predefined-type">int</span> width, height;
+    VideoCapture cap;
+    vector&lt;Mat&gt; planes;
+    Mat histR;
+    <span class="predefined-type">int</span> nbins = <span class="integer">64</span>;
+    <span class="predefined-type">float</span> range[] = {<span class="integer">0</span>, <span class="integer">256</span>};
+    <span class="directive">const</span> <span class="predefined-type">float</span> *histrange = { range };
+    <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
+    <span class="predefined-type">bool</span> acummulate = <span class="predefined-constant">false</span>;
+    <span class="predefined-type">bool</span> movimento= <span class="predefined-constant">false</span>;
+
     cap.open(<span class="integer">0</span>);
 
     <span class="keyword">if</span>(!cap.isOpened())
@@ -1003,79 +1030,228 @@ floodFill(image,p,<span class="integer">50</span>);
 
     <span class="predefined-type">int</span> histw = nbins, histh = nbins/<span class="integer">2</span>;
     Mat histImgR(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
-    Mat histImgG(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
-    Mat histImgB(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
 
-    vector&lt;Mat&gt; prevHist;
-    prevHist.resize(<span class="integer">3</span>);
-    <span class="predefined-type">double</span> tempo= time(<span class="predefined-constant">NULL</span>);
+    vector&lt;Mat&gt; prevHist; <span class="comment">// histogramas anteriores</span>
+    prevHist.resize(<span class="integer">1</span>);
+    <span class="predefined-type">double</span> contFrame= <span class="integer">0</span>;
     <span class="keyword">while</span>(<span class="integer">1</span>)
     {
-<span class="comment">//        Mat histR, histG, histB;</span>
         cap &gt;&gt; image;
-<span class="comment">//        Mat ycrcb;</span>
-<span class="comment">//        cvtColor(image,ycrcb,CV_BGR2YCrCb);</span>
-<span class="comment">//        vector&lt;Mat&gt; channels;</span>
-<span class="comment">//        split(ycrcb,channels);</span>
-<span class="comment">//        equalizeHist(channels[0], channels[0]);</span>
-<span class="comment">//        merge(channels,ycrcb);</span>
-<span class="comment">//        cvtColor(ycrcb,image,CV_YCrCb2BGR);</span>
-
+        resize(image, image, Size(<span class="integer">640</span>,<span class="integer">480</span>));
         split (image, planes);
-        equalizeHist(planes[<span class="integer">0</span>], planes[<span class="integer">0</span>]);
-        equalizeHist(planes[<span class="integer">1</span>], planes[<span class="integer">1</span>]);
-        equalizeHist(planes[<span class="integer">2</span>], planes[<span class="integer">2</span>]);
-        merge(planes, image);
         calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histR, <span class="integer">1</span>,
                  &amp;nbins, &amp;histrange,
                  uniform, acummulate);
-        calcHist(&amp;planes[<span class="integer">1</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
-                 &amp;nbins, &amp;histrange,
-                 uniform, acummulate);
-
-        calcHist(&amp;planes[<span class="integer">2</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histB, <span class="integer">1</span>,
-                 &amp;nbins, &amp;histrange,
-                 uniform, acummulate);
-
         normalize(histR, histR, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
-        normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
-        normalize(histB, histB, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
-
         histImgR.setTo(Scalar(<span class="integer">0</span>));
-        histImgG.setTo(Scalar(<span class="integer">0</span>));
-        histImgB.setTo(Scalar(<span class="integer">0</span>));
-
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;nbins; i++)
         {
             line(histImgR, Point(i, histh),
                  Point(i, histh-cvRound(histR.at&lt;<span class="predefined-type">float</span>&gt;(i))),
                  Scalar(<span class="integer">0</span>, <span class="integer">0</span>, <span class="integer">255</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
-            line(histImgG, Point(i, histh),
-                 Point(i, histh-cvRound(histG.at&lt;<span class="predefined-type">float</span>&gt;(i))),
-                 Scalar(<span class="integer">0</span>, <span class="integer">255</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
-            line(histImgB, Point(i, histh),
-                 Point(i, histh-cvRound(histB.at&lt;<span class="predefined-type">float</span>&gt;(i))),
-                 Scalar(<span class="integer">255</span>, <span class="integer">0</span>, <span class="integer">0</span>), <span class="integer">1</span>, <span class="integer">8</span>, <span class="integer">0</span>);
         }
         histImgR.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">0</span>,nbins, histh)));
-        histImgG.copyTo(image(Rect(<span class="integer">0</span>, histh,nbins, histh)));
-        histImgB.copyTo(image(Rect(<span class="integer">0</span>, <span class="integer">2</span>*histh,nbins, histh)));
-
-        <span class="keyword">if</span>(prevHist[<span class="integer">0</span>].data)
+        <span class="keyword">if</span>(prevHist[<span class="integer">0</span>].data) <span class="comment">// verifica se ja existe histograma anterior</span>
         {
-            cout &lt;&lt; compareHist(histR, prevHist[<span class="integer">0</span>], CV_COMP_CORREL) &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span>
-            &lt;&lt; compareHist(histG, prevHist[<span class="integer">1</span>], CV_COMP_CORREL) &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span>
-            &lt;&lt; compareHist(histB, prevHist[<span class="integer">2</span>], CV_COMP_CORREL)&lt;&lt; endl;
+            movimento= <span class="predefined-constant">false</span>; <span class="comment">// movimento inicialmente falso</span>
+            <span class="comment">// verifica se existe uma diferenca muito grande</span>
+            <span class="keyword">if</span>(compareHist(histR, prevHist[<span class="integer">0</span>], CV_COMP_CHISQR)&gt;<span class="integer">10</span>)
+                movimento= <span class="predefined-constant">true</span>;
         }
-        prevHist[<span class="integer">0</span>]= histR.clone();
-        prevHist[<span class="integer">1</span>]= histG.clone();
-        prevHist[<span class="integer">2</span>]= histB.clone();
+        <span class="keyword">if</span>(movimento) <span class="comment">// se tiver movimento escreve na tela</span>
+        {
+            putText(image, <span class="string"><span class="delimiter">&quot;</span><span class="content">Movimento Detectado.</span><span class="delimiter">&quot;</span></span>, cvPoint(<span class="integer">1</span>,<span class="integer">110</span>),
+                FONT_HERSHEY_COMPLEX_SMALL, <span class="float">0</span><span class="float">.8</span>, cvScalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">250</span>), <span class="integer">1</span>, CV_AA);
+        }
+        <span class="keyword">if</span>(contFrame&gt;<span class="integer">15</span>) <span class="comment">// atualiza histograma de comparacao a cada 15 frames</span>
+        {
+            contFrame= <span class="integer">0</span>;
+            prevHist[<span class="integer">0</span>]= histR.clone(); <span class="comment">// copia o histograma</span>
+        }
+        contFrame++;
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
         <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
     }
     <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_filtragem_no_domínio_espacial">Filtragem no domínio espacial</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_1_4">Exercício 1</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/filtroespacial.cpp como referência, Implementar um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas.</p>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="directive">void</span> printmask(Mat &amp;m)
+{
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;m.size().height; i++)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;m.size().width; j++)
+        {
+            cout &lt;&lt; m.at&lt;<span class="predefined-type">float</span>&gt;(i,j) &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">,</span><span class="delimiter">&quot;</span></span>;
+        }
+        cout &lt;&lt; endl;
+    }
+}
+
+<span class="directive">void</span> menu()
+{
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="content">pressione a tecla para ativar o filtro: </span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">a - calcular modulo</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">m - media</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">g - gauss</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">v - vertical</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">h - horizontal</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">l - laplaciano</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">j - laplaciano do gaussiano</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">esc - sair</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+}
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv)
+{
+    VideoCapture video;
+    <span class="predefined-type">float</span> media[] = {<span class="integer">1</span>,<span class="integer">1</span>,<span class="integer">1</span>,
+                     <span class="integer">1</span>,<span class="integer">1</span>,<span class="integer">1</span>,
+                     <span class="integer">1</span>,<span class="integer">1</span>,<span class="integer">1</span>
+                    };
+    <span class="predefined-type">float</span> gauss[] = {<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">1</span>,
+                     <span class="integer">2</span>,<span class="integer">4</span>,<span class="integer">2</span>,
+                     <span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">1</span>
+                    };
+    <span class="predefined-type">float</span> horizontal[]= {-<span class="integer">1</span>,<span class="integer">0</span>,<span class="integer">1</span>,
+                         -<span class="integer">2</span>,<span class="integer">0</span>,<span class="integer">2</span>,
+                         -<span class="integer">1</span>,<span class="integer">0</span>,<span class="integer">1</span>
+                        };
+    <span class="predefined-type">float</span> vertical[]= {-<span class="integer">1</span>,-<span class="integer">2</span>,-<span class="integer">1</span>,
+                       <span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>,
+                       <span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">1</span>
+                      };
+    <span class="predefined-type">float</span> laplacian[]= {<span class="integer">0</span>,-<span class="integer">1</span>,<span class="integer">0</span>,
+                        -<span class="integer">1</span>,<span class="integer">4</span>,-<span class="integer">1</span>,
+                        <span class="integer">0</span>,-<span class="integer">1</span>,<span class="integer">0</span>
+                       };
+
+    Mat cap, frame, frame32f, frameFiltered;
+    Mat mask(<span class="integer">3</span>,<span class="integer">3</span>,CV_32F), mask1;
+    Mat result, result1;
+    <span class="predefined-type">double</span> width, height, min, max;
+    <span class="predefined-type">int</span> absolut;
+    <span class="predefined-type">char</span> key;
+
+    video.open(<span class="integer">0</span>);
+    <span class="keyword">if</span>(!video.isOpened())
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+    width=video.get(CV_CAP_PROP_FRAME_WIDTH);
+    height=video.get(CV_CAP_PROP_FRAME_HEIGHT);
+    std::cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">largura=</span><span class="delimiter">&quot;</span></span> &lt;&lt; width &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;;
+    std::cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">altura =</span><span class="delimiter">&quot;</span></span> &lt;&lt; height&lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;;
+
+    namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtroespacial</span><span class="delimiter">&quot;</span></span>,<span class="integer">1</span>);
+
+    mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, media);
+    scaleAdd(mask, <span class="integer">1</span>/<span class="float">9</span><span class="float">.0</span>, Mat::zeros(<span class="integer">3</span>,<span class="integer">3</span>,CV_32F), mask1);
+    swap(mask, mask1);
+    absolut=<span class="integer">1</span>; <span class="comment">// calcs abs of the image</span>
+    <span class="predefined-type">bool</span> lapgauss= <span class="predefined-constant">false</span>;
+    menu();
+    <span class="keyword">for</span>(;;)
+    {
+        video &gt;&gt; cap;
+        resize(cap, cap, Size(<span class="integer">640</span>, <span class="integer">480</span>));
+        cvtColor(cap, frame, CV_BGR2GRAY);
+        flip(frame, frame, <span class="integer">1</span>);
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">original</span><span class="delimiter">&quot;</span></span>, frame);
+        frame.convertTo(frame32f, CV_32F);
+        <span class="keyword">if</span>(lapgauss)
+        {
+            Mat aux;
+            filter2D(frame32f, frameFiltered, frame32f.depth(), Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, gauss), Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+            filter2D(frameFiltered, aux, frameFiltered.depth(), Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, laplacian), Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+            <span class="keyword">if</span>(absolut)
+                aux=abs(aux);
+            aux.convertTo(result, CV_8U);
+        }
+        <span class="keyword">else</span>
+        {
+            filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+            <span class="keyword">if</span>(absolut)
+                frameFiltered=abs(frameFiltered);
+            frameFiltered.convertTo(result, CV_8U);
+        }
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtroespacial</span><span class="delimiter">&quot;</span></span>, result);
+        key = (<span class="predefined-type">char</span>) waitKey(<span class="integer">10</span>);
+        <span class="keyword">if</span>( key == <span class="integer">27</span> ) <span class="keyword">break</span>; <span class="comment">// esc pressed!</span>
+        <span class="keyword">if</span>(key != -<span class="integer">1</span>) lapgauss= <span class="predefined-constant">false</span>;
+        <span class="keyword">switch</span>(key)
+        {
+        <span class="keyword">case</span> <span class="char">'a'</span>:
+            menu();
+            absolut=!absolut;
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="char">'m'</span>:
+            menu();
+            mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, media).clone();
+            mask/=<span class="integer">9</span>;
+            printmask(mask);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="char">'g'</span>:
+            menu();
+            mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, gauss).clone();
+            mask/=<span class="integer">16</span>;
+            printmask(mask);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="char">'h'</span>:
+            menu();
+            mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, horizontal);
+            printmask(mask);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="char">'v'</span>:
+            menu();
+            mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, vertical);
+            printmask(mask);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="char">'l'</span>:
+            menu();
+            mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, laplacian);
+            printmask(mask);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="char">'j'</span>:
+            menu();
+            lapgauss= <span class="predefined-constant">true</span>;
+        <span class="keyword">break</span>;
+        <span class="keyword">default</span>:
+            <span class="keyword">break</span>;
+        }
+    }
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado utilizando filtro gaussiano</div>
+<p><span class="image"><img src="Laplgauss//gauss.png" alt="gauss"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado utilizando filtro laplaciano</div>
+<p><span class="image"><img src="Laplgauss//laplace.png" alt="laplace"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado utilizando filtro laplaciano do gaussiano</div>
+<p><span class="image"><img src="Laplgauss//lagauss.png" alt="lagauss"></span></p>
 </div>
 </div>
 </div>
@@ -1106,7 +1282,7 @@ floodFill(image,p,<span class="integer">50</span>);
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-05 23:37:28 BRT
+Last updated 2016-09-08 21:41:02 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">

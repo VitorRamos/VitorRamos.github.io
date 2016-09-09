@@ -21,17 +21,18 @@ int main(int, char**)
     namedWindow("janela",WINDOW_AUTOSIZE);
 
     cout << "Digite o Numero de Regioes : ";
-    cin >> n;
+    cin >> n; // numero de divisoes em uma linha
     int wr= image.size().width/n, hr= image.size().height/n;
     for(int i=0; i<n; i++)
     {
         for(int j=0; j<n; j++)
         {
-            int rx= rand()%n, ry= rand()%n;
-            Mat randpos= image(Rect(wr*rx,hr*ry,wr,hr));
-            Mat aux= image(Rect(wr*i,hr*j,wr, hr)).clone();
-            randpos.copyTo(image(Rect(wr*i,hr*j,wr, hr)));
-            aux.copyTo(image(Rect(wr*rx,hr*ry,wr,hr)));
+            // A ideia e pegar cada regiao e trocar com uma regiao aleatoria na imagem
+            int rx= rand()%n, ry= rand()%n; // duas posicoes aleatorias de regioes
+            Mat randpos= image(Rect(wr*rx,hr*ry,wr,hr)); // a regiao escolhida aleatoriamente
+            Mat aux= image(Rect(wr*i,hr*j,wr, hr)).clone(); // a regiao atual
+            randpos.copyTo(image(Rect(wr*i,hr*j,wr, hr))); // copia a regiao aleatoria na regiao atual
+            aux.copyTo(image(Rect(wr*rx,hr*ry,wr,hr))); // copia a regial atual na regiao aleatoria
         }
     }
     imshow("janela", image);

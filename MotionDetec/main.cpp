@@ -10,12 +10,13 @@ int main(int argc, char** argv)
     int width, height;
     VideoCapture cap;
     vector<Mat> planes;
-    Mat histR, histG, histB;
-    int nbins = 256;
+    Mat histR;
+    int nbins = 64;
     float range[] = {0, 256};
     const float *histrange = { range };
     bool uniform = true;
     bool acummulate = false;
+    bool movimento= false;
 
     cap.open(0);
 
@@ -33,73 +34,45 @@ int main(int argc, char** argv)
 
     int histw = nbins, histh = nbins/2;
     Mat histImgR(histh, histw, CV_8UC3, Scalar(0,0,0));
-    Mat histImgG(histh, histw, CV_8UC3, Scalar(0,0,0));
-    Mat histImgB(histh, histw, CV_8UC3, Scalar(0,0,0));
 
-    vector<Mat> prevHist;
-    prevHist.resize(3);
-    double tempo= time(NULL);
+    vector<Mat> prevHist; // histogramas anteriores
+    prevHist.resize(1);
+    double contFrame= 0;
     while(1)
     {
-//        Mat histR, histG, histB;
         cap >> image;
-//        Mat ycrcb;
-//        cvtColor(image,ycrcb,CV_BGR2YCrCb);
-//        vector<Mat> channels;
-//        split(ycrcb,channels);
-//        equalizeHist(channels[0], channels[0]);
-//        merge(channels,ycrcb);
-//        cvtColor(ycrcb,image,CV_YCrCb2BGR);
-
+        resize(image, image, Size(640,480));
         split (image, planes);
-        equalizeHist(planes[0], planes[0]);
-        equalizeHist(planes[1], planes[1]);
-        equalizeHist(planes[2], planes[2]);
-        merge(planes, image);
         calcHist(&planes[0], 1, 0, Mat(), histR, 1,
                  &nbins, &histrange,
                  uniform, acummulate);
-        calcHist(&planes[1], 1, 0, Mat(), histG, 1,
-                 &nbins, &histrange,
-                 uniform, acummulate);
-
-        calcHist(&planes[2], 1, 0, Mat(), histB, 1,
-                 &nbins, &histrange,
-                 uniform, acummulate);
-
         normalize(histR, histR, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
-        normalize(histG, histG, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
-        normalize(histB, histB, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
-
         histImgR.setTo(Scalar(0));
-        histImgG.setTo(Scalar(0));
-        histImgB.setTo(Scalar(0));
-
         for(int i=0; i<nbins; i++)
         {
             line(histImgR, Point(i, histh),
                  Point(i, histh-cvRound(histR.at<float>(i))),
                  Scalar(0, 0, 255), 1, 8, 0);
-            line(histImgG, Point(i, histh),
-                 Point(i, histh-cvRound(histG.at<float>(i))),
-                 Scalar(0, 255, 0), 1, 8, 0);
-            line(histImgB, Point(i, histh),
-                 Point(i, histh-cvRound(histB.at<float>(i))),
-                 Scalar(255, 0, 0), 1, 8, 0);
         }
         histImgR.copyTo(image(Rect(0, 0,nbins, histh)));
-        histImgG.copyTo(image(Rect(0, histh,nbins, histh)));
-        histImgB.copyTo(image(Rect(0, 2*histh,nbins, histh)));
-
-        if(prevHist[0].data)
+        if(prevHist[0].data) // verifica se ja existe histograma anterior
         {
-            cout << compareHist(histR, prevHist[0], CV_COMP_CORREL) << " "
-            << compareHist(histG, prevHist[1], CV_COMP_CORREL) << " "
-            << compareHist(histB, prevHist[2], CV_COMP_CORREL)<< endl;
+            movimento= false; // movimento inicialmente falso
+            // verifica se existe uma diferenca muito grande
+            if(compareHist(histR, prevHist[0], CV_COMP_CHISQR)>10)
+                movimento= true;
         }
-        prevHist[0]= histR.clone();
-        prevHist[1]= histG.clone();
-        prevHist[2]= histB.clone();
+        if(movimento) // se tiver movimento escreve na tela
+        {
+            putText(image, "Movimento Detectado.", cvPoint(1,110),
+                FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(0,0,250), 1, CV_AA);
+        }
+        if(contFrame>15) // atualiza histograma de comparacao a cada 15 frames
+        {
+            contFrame= 0;
+            prevHist[0]= histR.clone(); // copia o histograma
+        }
+        contFrame++;
         imshow("image", image);
         if(waitKey(30) >= 0) break;
     }
