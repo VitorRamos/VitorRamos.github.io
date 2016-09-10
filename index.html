@@ -1173,7 +1173,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
         <span class="keyword">if</span>(lapgauss)
         {
             Mat aux;
-            filter2D(frame32f, frameFiltered, frame32f.depth(), Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, gauss), Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+            filter2D(frame32f, frameFiltered, frame32f.depth(), Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, gauss)/16, Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
             filter2D(frameFiltered, aux, frameFiltered.depth(), Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, laplacian), Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
             <span class="keyword">if</span>(absolut)
                 aux=abs(aux);
