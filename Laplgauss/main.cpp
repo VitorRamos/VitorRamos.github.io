@@ -87,7 +87,7 @@ int main(int argvc, char** argv)
         if(lapgauss)
         {
             Mat aux;
-            filter2D(frame32f, frameFiltered, frame32f.depth(), Mat(3, 3, CV_32F, gauss), Point(1,1), 0);
+            filter2D(frame32f, frameFiltered, frame32f.depth(), Mat(3, 3, CV_32F, gauss)/16, Point(1,1), 0);
             filter2D(frameFiltered, aux, frameFiltered.depth(), Mat(3, 3, CV_32F, laplacian), Point(1,1), 0);
             if(absolut)
                 aux=abs(aux);
