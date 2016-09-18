@@ -65,7 +65,7 @@ int main(int argvc, char** argv)
 
     createTrackbar("Forca", "imr", &d_slider, d_max, on_trackbar_d);
     on_trackbar_d(d_slider, 0);
-
+    // configura posicao do tilt-shift
     while(1)
     {
         if(img.empty())
@@ -79,6 +79,7 @@ int main(int argvc, char** argv)
         imshow("imr",result);
         if(waitKey(30) == 27) break;
     }
+    // comeca a gravar
     while(1)
     {
         for(int i=0; i<4; i++)
