@@ -38,21 +38,20 @@ void on_trackbar_l(int, void* )
 int main(int argvc, char** argv)
 {
     VideoWriter res;
-    res.open("result.avi", CV_FOURCC('M','J','P','G'), 25, Size(640,480));
+    // arquivo a se salvo
+    res.open("result3.avi", CV_FOURCC('M','J','P','G'), 15, Size(640,480));
     if(!res.isOpened())
-    {
         return -1;
-    }
-    VideoCapture cap(0);
-    Mat img;
+    // abre arquivo do computador
+    VideoCapture cap("teste3.avi");
+    Mat img, hsv; // imagem em RGB e HSV
     cap >> img;
-//    resize(img,img,Size(640,480));
-    Mat borrada= img.clone();
-    Mat result= Mat::zeros(Size(640,480), CV_8UC3);
+    resize(img,img,Size(640,480));
+    Mat borrada= img.clone(); // imagem borrada
+    Mat result= Mat::zeros(img.size(), CV_8UC3); // imagem resultante
 
-    for(int i=0; i<10; i++)
-        GaussianBlur(borrada, borrada, Size(9,9),0,0);
 
+    // barras deslizantes
     namedWindow("imr", 1);
     h_max= img.size().height;
     sprintf(TrackbarH, "Altura    %d", h_max);
@@ -67,20 +66,45 @@ int main(int argvc, char** argv)
     createTrackbar("Forca", "imr", &d_slider, d_max, on_trackbar_d);
     on_trackbar_d(d_slider, 0);
 
-    int cont= 0;
     while(1)
     {
-        Mat img;
-        cap >> img;
-        cont++;
-        if(cont%3==0) continue; // decarta 1 quadro a cada 3
+        if(img.empty())
+            break;
         borrada= img.clone();
         for(int i=0; i<10; i++)
             GaussianBlur(borrada, borrada, Size(9,9),0,0);
 
         for(int i=0; i<img.size().height; i++)
             addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),1-alphaPeso(i,l1,l2,d_slider),0,result.row(i));
-        res << result;
+        imshow("imr",result);
+        if(waitKey(30) == 27) break;
+    }
+    while(1)
+    {
+        for(int i=0; i<4; i++)
+            cap >> img;
+        cap >> img;
+        resize(img,img, Size(640,480));
+        // converte para hsv
+        cvtColor(img, hsv, CV_BGR2HSV);
+        vector<Mat> planes;
+        split(hsv, planes);
+        // aumenta a saturacao da imagem
+        planes[1]*=2;
+        // junta novamente a imgame
+        merge(planes, hsv);
+        cvtColor(hsv,img,CV_HSV2BGR);
+        if(img.empty())
+            break;
+        borrada= img.clone();
+        // Borra a imagem
+        for(int i=0; i<10; i++)
+            GaussianBlur(borrada, borrada, Size(9,9),0,0);
+
+        // efeito tilt-shift
+        for(int i=0; i<img.size().height; i++)
+            addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),1-alphaPeso(i,l1,l2,d_slider),0,result.row(i));
+        res << result; // guarda o frame resultante
         imshow("imr",result);
         if(waitKey(30) != -1) break;
     }

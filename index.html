@@ -1416,21 +1416,20 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 <span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv)
 {
     VideoWriter res;
-    res.open(<span class="string"><span class="delimiter">&quot;</span><span class="content">result.avi</span><span class="delimiter">&quot;</span></span>, CV_FOURCC(<span class="char">'M'</span>,<span class="char">'J'</span>,<span class="char">'P'</span>,<span class="char">'G'</span>), <span class="integer">25</span>, Size(<span class="integer">640</span>,<span class="integer">480</span>));
+    <span class="comment">// arquivo a se salvo</span>
+    res.open(<span class="string"><span class="delimiter">&quot;</span><span class="content">result3.avi</span><span class="delimiter">&quot;</span></span>, CV_FOURCC(<span class="char">'M'</span>,<span class="char">'J'</span>,<span class="char">'P'</span>,<span class="char">'G'</span>), <span class="integer">15</span>, Size(<span class="integer">640</span>,<span class="integer">480</span>));
     <span class="keyword">if</span>(!res.isOpened())
-    {
         <span class="keyword">return</span> -<span class="integer">1</span>;
-    }
-    VideoCapture cap(<span class="integer">0</span>);
-    Mat img;
+    <span class="comment">// abre arquivo do computador</span>
+    VideoCapture cap(<span class="string"><span class="delimiter">&quot;</span><span class="content">teste3.avi</span><span class="delimiter">&quot;</span></span>);
+    Mat img, hsv; <span class="comment">// imagem em RGB e HSV</span>
     cap &gt;&gt; img;
-<span class="comment">//    resize(img,img,Size(640,480));</span>
-    Mat borrada= img.clone();
-    Mat result= Mat::zeros(Size(<span class="integer">640</span>,<span class="integer">480</span>), CV_8UC3);
+    resize(img,img,Size(<span class="integer">640</span>,<span class="integer">480</span>));
+    Mat borrada= img.clone(); <span class="comment">// imagem borrada</span>
+    Mat result= Mat::zeros(img.size(), CV_8UC3); <span class="comment">// imagem resultante</span>
 
-    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
-        GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
 
+    <span class="comment">// barras deslizantes</span>
     namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, <span class="integer">1</span>);
     h_max= img.size().height;
     sprintf(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">Altura    %d</span><span class="delimiter">&quot;</span></span>, h_max);
@@ -1445,20 +1444,45 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
     createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">Forca</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;d_slider, d_max, on_trackbar_d);
     on_trackbar_d(d_slider, <span class="integer">0</span>);
 
-    <span class="predefined-type">int</span> cont= <span class="integer">0</span>;
     <span class="keyword">while</span>(<span class="integer">1</span>)
     {
-        Mat img;
-        cap &gt;&gt; img;
-        cont++;
-        <span class="keyword">if</span>(cont%<span class="integer">3</span>==<span class="integer">0</span>) <span class="keyword">continue</span>; <span class="comment">// decarta 1 quadro a cada 3</span>
+        <span class="keyword">if</span>(img.empty())
+            <span class="keyword">break</span>;
         borrada= img.clone();
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
             GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
 
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;img.size().height; i++)
             addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),<span class="integer">1</span>-alphaPeso(i,l1,l2,d_slider),<span class="integer">0</span>,result.row(i));
-        res &lt;&lt; result;
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) == <span class="integer">27</span>) <span class="keyword">break</span>;
+    }
+    <span class="keyword">while</span>(<span class="integer">1</span>)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">4</span>; i++)
+            cap &gt;&gt; img;
+        cap &gt;&gt; img;
+        resize(img,img, Size(<span class="integer">640</span>,<span class="integer">480</span>));
+        <span class="comment">// converte para hsv</span>
+        cvtColor(img, hsv, CV_BGR2HSV);
+        vector&lt;Mat&gt; planes;
+        split(hsv, planes);
+        <span class="comment">// aumenta a saturacao da imagem</span>
+        planes[<span class="integer">1</span>]*=<span class="integer">2</span>;
+        <span class="comment">// junta novamente a imgame</span>
+        merge(planes, hsv);
+        cvtColor(hsv,img,CV_HSV2BGR);
+        <span class="keyword">if</span>(img.empty())
+            <span class="keyword">break</span>;
+        borrada= img.clone();
+        <span class="comment">// Borra a imagem</span>
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
+            GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
+
+        <span class="comment">// efeito tilt-shift</span>
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;img.size().height; i++)
+            addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),<span class="integer">1</span>-alphaPeso(i,l1,l2,d_slider),<span class="integer">0</span>,result.row(i));
+        res &lt;&lt; result; <span class="comment">// guarda o frame resultante</span>
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
         <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) != -<span class="integer">1</span>) <span class="keyword">break</span>;
     }
@@ -1470,7 +1494,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div class="paragraph">
 <div class="title">Resultado</div>
-<p><span class="image"><img src="TiltShiftVideo//resultado_.jpg" alt="resultado "></span></p>
+<p><span class="image"><img src="TiltShiftVideo//result3_1.gif" alt="result3 1"></span></p>
 </div>
 </div>
 </div>
@@ -1493,7 +1517,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-18 16:07:03 BRT
+Last updated 2016-09-18 17:46:21 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">
