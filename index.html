@@ -516,31 +516,31 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_manipulando_pixels_em_uma_imagem">Manipulando pixels em uma imagem</a>
 <ul class="sectlevel2">
-<li><a href="#_exercício_1">Exercício 1</a></li>
-<li><a href="#_exercício_2">Exercício 2</a></li>
+<li><a href="#_regiões">Regiões</a></li>
+<li><a href="#_troca_regiões">Troca regiões</a></li>
 </ul>
 </li>
 <li><a href="#_preenchendo_regiões">Preenchendo regiões</a>
 <ul class="sectlevel2">
-<li><a href="#_exercício_1_2">Exercício 1</a></li>
-<li><a href="#_exercício_2_2">Exercício 2</a></li>
+<li><a href="#_contando_objetos_problema">Contando objetos problema</a></li>
+<li><a href="#_contando_objetos_com_buracos">Contando objetos com buracos</a></li>
 </ul>
 </li>
 <li><a href="#_manipulação_de_histogramas">Manipulação de histogramas</a>
 <ul class="sectlevel2">
-<li><a href="#_exercício_1_3">Exercício 1</a></li>
-<li><a href="#_exercício_2_3">Exercício 2</a></li>
+<li><a href="#_equalizador_histograma">Equalizador histograma</a></li>
+<li><a href="#_detecção_de_movimento">Detecção de movimento</a></li>
 </ul>
 </li>
-<li><a href="#_filtragem_no_domínio_espacial">Filtragem no domínio espacial</a>
+<li><a href="#_filtragem_no_domínio_espacial_i">Filtragem no domínio espacial I</a>
 <ul class="sectlevel2">
-<li><a href="#_exercício_1_4">Exercício 1</a></li>
+<li><a href="#_laplace_com_gauss">Laplace com gauss</a></li>
 </ul>
 </li>
-<li><a href="#_filtragem_no_domínio_espacial_2">Filtragem no domínio espacial 2</a>
+<li><a href="#_filtragem_no_domínio_espacial_ii">Filtragem no domínio espacial II</a>
 <ul class="sectlevel2">
-<li><a href="#_exercício_1_5">Exercício 1</a></li>
-<li><a href="#_exercício_2_4">Exercício 2</a></li>
+<li><a href="#_tiltshift">TiltShift</a></li>
+<li><a href="#_tiltshift_com_video">TiltShift com video</a></li>
 </ul>
 </li>
 <li><a href="#_bibliografia">Bibliografia</a></li>
@@ -551,7 +551,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Vitor Ramos &lt;<a href="mailto:vitorramos89@gmail.com">vitorramos89@gmail.com</a>&gt;</p>
+<p>Vitor Ramos &lt;<a href="mailto:ramos.vitor89@gmail.com">ramos.vitor89@gmail.com</a>&gt;</p>
 </div>
 </div>
 </div>
@@ -559,7 +559,7 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_manipulando_pixels_em_uma_imagem">Manipulando pixels em uma imagem</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_exercício_1">Exercício 1</h3>
+<h3 id="_regiões">Regiões</h3>
 <div class="paragraph">
 <p>Implementar de um programa que deverá solicitar ao usuário as coordenadas de dois pontos \$P_1\$ e \$P_2\$ localizados dentro dos limites do tamanho da imagem que lhe for fornecida e exibir. Entretanto, a região definida pelo retângulo de vértices opostos definidos pelos pontos \$P_1\$ e \$P_2\$ será exibida com o negativo da imagem na região correspondente.</p>
 </div>
@@ -612,7 +612,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exercício_2">Exercício 2</h3>
+<h3 id="_troca_regiões">Troca regiões</h3>
 <div class="paragraph">
 <p>Implementar um programa que deverar trocar aleatoriamente regiões da imagem, formando uma espécie de quebra-cabeças. Explore o uso da classe Mat e seus construtores para criar as regiões que serão trocadas. O efeito é ilustrado na Figura Troca de regiões.</p>
 </div>
@@ -682,12 +682,12 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_preenchendo_regiões">Preenchendo regiões</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_exercício_1_2">Exercício 1</h3>
+<h3 id="_contando_objetos_problema">Contando objetos problema</h3>
 <div class="paragraph">
 <p>Observando-se o programa labeling.cpp como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.</p>
 </div>
 <div class="paragraph">
-<p>Solucao : Isso ocorre porque para cada objeto é atribuido um valor de cinza, se a imagem tive mais de 255 objetos o programa vai atribuir valores invalidos de cinza pois a imagem só possui 8 bits, a solução é fixar o valor de cinza dos objetos encontrados assim o programa podera classificar quantos objetos tiver na imagem.</p>
+<p><span class="red">Solucao</span> : Isso ocorre porque para cada objeto é atribuido um valor de cinza, se a imagem tive mais de 255 objetos o programa vai atribuir valores invalidos de cinza pois a imagem só possui 8 bits, a solução é fixar o valor de cinza dos objetos encontrados assim o programa podera classificar quantos objetos tiver na imagem.</p>
 </div>
 <div class="listingblock">
 <div class="title">Codigo Modificado</div>
@@ -748,7 +748,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exercício_2_2">Exercício 2</h3>
+<h3 id="_contando_objetos_com_buracos">Contando objetos com buracos</h3>
 <div class="paragraph">
 <p>Aprimoração do algoritmo de contagem apresentado para identificar regiões com ou sem buracos internos. Assumindo que objetos com mais de um buraco podem existir. Incluindo suporte no seu algoritmo para não contar bolhas que tocam as bordas da imagem.</p>
 </div>
@@ -858,7 +858,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 <h2 id="_manipulação_de_histogramas">Manipulação de histogramas</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_exercício_1_3">Exercício 1</h3>
+<h3 id="_equalizador_histograma">Equalizador histograma</h3>
 <div class="paragraph">
 <p>Utilizando o programa exemplos/histogram.cpp como referência. Implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem.</p>
 </div>
@@ -980,7 +980,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exercício_2_3">Exercício 2</h3>
+<h3 id="_detecção_de_movimento">Detecção de movimento</h3>
 <div class="paragraph">
 <p>Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.</p>
 </div>
@@ -1080,10 +1080,10 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 </div>
 <div class="sect1">
-<h2 id="_filtragem_no_domínio_espacial">Filtragem no domínio espacial</h2>
+<h2 id="_filtragem_no_domínio_espacial_i">Filtragem no domínio espacial I</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_exercício_1_4">Exercício 1</h3>
+<h3 id="_laplace_com_gauss">Laplace com gauss</h3>
 <div class="paragraph">
 <p>Utilizando o programa exemplos/filtroespacial.cpp como referência, Implementar um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas.</p>
 </div>
@@ -1260,10 +1260,10 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 </div>
 <div class="sect1">
-<h2 id="_filtragem_no_domínio_espacial_2">Filtragem no domínio espacial 2</h2>
+<h2 id="_filtragem_no_domínio_espacial_ii">Filtragem no domínio espacial II</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_exercício_1_5">Exercício 1</h3>
+<h3 id="_tiltshift">TiltShift</h3>
 <div class="paragraph">
 <p>Utilizando o programa exemplos/addweighted.cpp como referência, implemente um programa tiltshift.cpp. Três ajustes deverão ser providos na tela da interface:</p>
 </div>
@@ -1290,9 +1290,12 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 <span class="directive">using</span> <span class="keyword">namespace</span> cv;
 <span class="directive">using</span> <span class="keyword">namespace</span> std;
 
+<span class="comment">// nome das barras deslizantes</span>
 <span class="predefined-type">char</span> TrackbarH[<span class="integer">50</span>];
 <span class="predefined-type">char</span> TrackbarL[<span class="integer">50</span>];
-
+<span class="comment">// h - barra deslizante da altura</span>
+<span class="comment">// l - barra deslizante da tamanho da janela de foco</span>
+<span class="comment">// d - forca do decaimento da janela</span>
 <span class="predefined-type">int</span> h_slider, h_max;
 <span class="predefined-type">int</span> l_slider, l_max;
 <span class="predefined-type">int</span> d_slider, d_max= <span class="integer">200</span>;
@@ -1310,12 +1313,14 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 
 <span class="directive">void</span> on_trackbar_h(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
 {
+    <span class="comment">// calcula l1 e l2 da funcao</span>
     l1= h_slider-l_slider;
     l2= h_slider+l_slider;
 }
 
 <span class="directive">void</span> on_trackbar_l(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
 {
+    <span class="comment">// calcula l1 e l2 da funcao</span>
     l1= h_slider-l_slider;
     l2= h_slider+l_slider;
 }
@@ -1325,18 +1330,19 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
     Mat img= imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">pessoas.jpg</span><span class="delimiter">&quot;</span></span>);
     resize(img,img,Size(<span class="integer">640</span>,<span class="integer">480</span>));
     Mat borrada= img.clone();
-    Mat result= Mat::zeros(Size(<span class="integer">640</span>,<span class="integer">480</span>), CV_8UC3);
+    Mat result= Mat::zeros(img.size, CV_8UC3);
 
+    <span class="comment">// bora a imagem passando 10 vezes o filtro gaussiano com kernel 9x9</span>
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
         GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
 
     namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, <span class="integer">1</span>);
-    h_max= img.size().height;
+    h_max= img.size().height; <span class="comment">// altura maxima regiao central</span>
     sprintf(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">Altura    %d</span><span class="delimiter">&quot;</span></span>, h_max);
     createTrackbar(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;h_slider, h_max, on_trackbar_h);
     on_trackbar_h(h_slider, <span class="integer">0</span>);
 
-    l_max= img.size().height;
+    l_max= img.size().height; <span class="comment">// largura regiao central maxima</span>
     sprintf(TrackbarL, <span class="string"><span class="delimiter">&quot;</span><span class="content">Largura %d</span><span class="delimiter">&quot;</span></span>, l_max);
     createTrackbar(TrackbarL, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;l_slider, l_max, on_trackbar_l);
     on_trackbar_l(l_slider, <span class="integer">0</span>);
@@ -1346,23 +1352,24 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 
     <span class="keyword">while</span>(<span class="integer">1</span>)
     {
+        <span class="comment">// calcula a imagem resultante aplicando a funcao de transicao a cada linha da imagem</span>
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;img.size().height; i++)
             addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),<span class="integer">1</span>-alphaPeso(i,l1,l2,d_slider),<span class="integer">0</span>,result.row(i));
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
-        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) != -<span class="integer">1</span>) <span class="keyword">break</span>;
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) == <span class="integer">27</span>) <span class="keyword">break</span>;
     }
-    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">resultado.jpg</span><span class="delimiter">&quot;</span></span>,result);
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">resultado.jpg</span><span class="delimiter">&quot;</span></span>,result); <span class="comment">// salva a imagem</span>
     <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <div class="title">Resultado</div>
-<p><span class="image"><img src="TiltShift//resultado.jpg" alt="resultado"></span></p>
+<p><span class="image"><img src="TiltShift//resultado_.png" alt="resultado "></span></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exercício_2_4">Exercício 2</h3>
+<h3 id="_tiltshift_com_video">TiltShift com video</h3>
 <div class="paragraph">
 <p>Utilizando o programa exemplos/addweighted.cpp como referência, implemente um programa tiltshiftvideo.cpp. Tal programa deverá ser capaz de processar um arquivo de vídeo, produzir o efeito de tilt-shift nos quadros presentes e escrever o resultado em outro arquivo de vídeo. A ideia é criar um efeito de miniaturização de cenas. Descarte quadros em uma taxa que julgar conveniente para evidenciar o efeito de stop motion, comum em vídeos desse tipo.</p>
 </div>
@@ -1408,6 +1415,12 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 
 <span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv)
 {
+    VideoWriter res;
+    res.open(<span class="string"><span class="delimiter">&quot;</span><span class="content">result.avi</span><span class="delimiter">&quot;</span></span>, CV_FOURCC(<span class="char">'M'</span>,<span class="char">'J'</span>,<span class="char">'P'</span>,<span class="char">'G'</span>), <span class="integer">25</span>, Size(<span class="integer">640</span>,<span class="integer">480</span>));
+    <span class="keyword">if</span>(!res.isOpened())
+    {
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+    }
     VideoCapture cap(<span class="integer">0</span>);
     Mat img;
     cap &gt;&gt; img;
@@ -1432,19 +1445,24 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
     createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">Forca</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;d_slider, d_max, on_trackbar_d);
     on_trackbar_d(d_slider, <span class="integer">0</span>);
 
+    <span class="predefined-type">int</span> cont= <span class="integer">0</span>;
     <span class="keyword">while</span>(<span class="integer">1</span>)
     {
         Mat img;
         cap &gt;&gt; img;
+        cont++;
+        <span class="keyword">if</span>(cont%<span class="integer">3</span>==<span class="integer">0</span>) <span class="keyword">continue</span>; <span class="comment">// decarta 1 quadro a cada 3</span>
         borrada= img.clone();
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
             GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
 
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;img.size().height; i++)
             addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),<span class="integer">1</span>-alphaPeso(i,l1,l2,d_slider),<span class="integer">0</span>,result.row(i));
+        res &lt;&lt; result;
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
         <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) != -<span class="integer">1</span>) <span class="keyword">break</span>;
     }
+    res.release();
     imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">resultado.jpg</span><span class="delimiter">&quot;</span></span>,result);
     <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
@@ -1452,7 +1470,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div class="paragraph">
 <div class="title">Resultado</div>
-<p><span class="image"><img src="TiltShiftVideo//resultado.jpg" alt="resultado"></span></p>
+<p><span class="image"><img src="TiltShiftVideo//resultado_.jpg" alt="resultado "></span></p>
 </div>
 </div>
 </div>
@@ -1475,7 +1493,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-18 10:50:22 BRT
+Last updated 2016-09-18 16:07:03 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">

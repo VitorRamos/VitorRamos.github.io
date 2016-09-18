@@ -37,6 +37,12 @@ void on_trackbar_l(int, void* )
 
 int main(int argvc, char** argv)
 {
+    VideoWriter res;
+    res.open("result.avi", CV_FOURCC('M','J','P','G'), 25, Size(640,480));
+    if(!res.isOpened())
+    {
+        return -1;
+    }
     VideoCapture cap(0);
     Mat img;
     cap >> img;
@@ -61,19 +67,24 @@ int main(int argvc, char** argv)
     createTrackbar("Forca", "imr", &d_slider, d_max, on_trackbar_d);
     on_trackbar_d(d_slider, 0);
 
+    int cont= 0;
     while(1)
     {
         Mat img;
         cap >> img;
+        cont++;
+        if(cont%3==0) continue; // decarta 1 quadro a cada 3
         borrada= img.clone();
         for(int i=0; i<10; i++)
             GaussianBlur(borrada, borrada, Size(9,9),0,0);
 
         for(int i=0; i<img.size().height; i++)
             addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),1-alphaPeso(i,l1,l2,d_slider),0,result.row(i));
+        res << result;
         imshow("imr",result);
         if(waitKey(30) != -1) break;
     }
+    res.release();
     imwrite("resultado.jpg",result);
     return 0;
 }
