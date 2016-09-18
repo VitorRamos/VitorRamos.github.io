@@ -537,6 +537,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_exercício_1_4">Exercício 1</a></li>
 </ul>
 </li>
+<li><a href="#_filtragem_no_domínio_espacial_2">Filtragem no domínio espacial 2</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_1_5">Exercício 1</a></li>
+<li><a href="#_exercício_2_4">Exercício 2</a></li>
+</ul>
+</li>
 <li><a href="#_bibliografia">Bibliografia</a></li>
 </ul>
 </div>
@@ -1254,6 +1260,204 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 </div>
 <div class="sect1">
+<h2 id="_filtragem_no_domínio_espacial_2">Filtragem no domínio espacial 2</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_1_5">Exercício 1</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/addweighted.cpp como referência, implemente um programa tiltshift.cpp. Três ajustes deverão ser providos na tela da interface:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>um ajuste para regular a altura da região central que entrará em foco</p>
+</li>
+<li>
+<p>um ajuste para regular a força de decaimento da região borrada</p>
+</li>
+<li>
+<p>um ajuste para regular a posição vertical do centro da região que entrará em foco. Finalizado o programa, a imagem produzida deverá ser salva em arquivo.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;math.h&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">char</span> TrackbarH[<span class="integer">50</span>];
+<span class="predefined-type">char</span> TrackbarL[<span class="integer">50</span>];
+
+<span class="predefined-type">int</span> h_slider, h_max;
+<span class="predefined-type">int</span> l_slider, l_max;
+<span class="predefined-type">int</span> d_slider, d_max= <span class="integer">200</span>;
+<span class="predefined-type">double</span> l1, l2;
+
+<span class="predefined-type">double</span> alphaPeso(<span class="predefined-type">int</span> x, <span class="predefined-type">double</span> l1, <span class="predefined-type">double</span> l2, <span class="predefined-type">double</span> d)
+{
+    <span class="keyword">return</span> <span class="float">0</span><span class="float">.5</span>*(tanh((x-l1)/d)-tanh((x-l2)/d));
+}
+
+<span class="directive">void</span> on_trackbar_d(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
+{
+
+}
+
+<span class="directive">void</span> on_trackbar_h(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
+{
+    l1= h_slider-l_slider;
+    l2= h_slider+l_slider;
+}
+
+<span class="directive">void</span> on_trackbar_l(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
+{
+    l1= h_slider-l_slider;
+    l2= h_slider+l_slider;
+}
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv)
+{
+    Mat img= imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">pessoas.jpg</span><span class="delimiter">&quot;</span></span>);
+    resize(img,img,Size(<span class="integer">640</span>,<span class="integer">480</span>));
+    Mat borrada= img.clone();
+    Mat result= Mat::zeros(Size(<span class="integer">640</span>,<span class="integer">480</span>), CV_8UC3);
+
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
+        GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
+
+    namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, <span class="integer">1</span>);
+    h_max= img.size().height;
+    sprintf(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">Altura    %d</span><span class="delimiter">&quot;</span></span>, h_max);
+    createTrackbar(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;h_slider, h_max, on_trackbar_h);
+    on_trackbar_h(h_slider, <span class="integer">0</span>);
+
+    l_max= img.size().height;
+    sprintf(TrackbarL, <span class="string"><span class="delimiter">&quot;</span><span class="content">Largura %d</span><span class="delimiter">&quot;</span></span>, l_max);
+    createTrackbar(TrackbarL, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;l_slider, l_max, on_trackbar_l);
+    on_trackbar_l(l_slider, <span class="integer">0</span>);
+
+    createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">Forca</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;d_slider, d_max, on_trackbar_d);
+    on_trackbar_d(d_slider, <span class="integer">0</span>);
+
+    <span class="keyword">while</span>(<span class="integer">1</span>)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;img.size().height; i++)
+            addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),<span class="integer">1</span>-alphaPeso(i,l1,l2,d_slider),<span class="integer">0</span>,result.row(i));
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) != -<span class="integer">1</span>) <span class="keyword">break</span>;
+    }
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">resultado.jpg</span><span class="delimiter">&quot;</span></span>,result);
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado</div>
+<p><span class="image"><img src="TiltShift//resultado.jpg" alt="resultado"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercício_2_4">Exercício 2</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/addweighted.cpp como referência, implemente um programa tiltshiftvideo.cpp. Tal programa deverá ser capaz de processar um arquivo de vídeo, produzir o efeito de tilt-shift nos quadros presentes e escrever o resultado em outro arquivo de vídeo. A ideia é criar um efeito de miniaturização de cenas. Descarte quadros em uma taxa que julgar conveniente para evidenciar o efeito de stop motion, comum em vídeos desse tipo.</p>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;math.h&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">char</span> TrackbarH[<span class="integer">50</span>];
+<span class="predefined-type">char</span> TrackbarL[<span class="integer">50</span>];
+
+<span class="predefined-type">int</span> h_slider, h_max;
+<span class="predefined-type">int</span> l_slider, l_max;
+<span class="predefined-type">int</span> d_slider, d_max= <span class="integer">200</span>;
+<span class="predefined-type">double</span> l1, l2;
+
+<span class="predefined-type">double</span> alphaPeso(<span class="predefined-type">int</span> x, <span class="predefined-type">double</span> l1, <span class="predefined-type">double</span> l2, <span class="predefined-type">double</span> d)
+{
+    <span class="keyword">return</span> <span class="float">0</span><span class="float">.5</span>*(tanh((x-l1)/d)-tanh((x-l2)/d));
+}
+
+<span class="directive">void</span> on_trackbar_d(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
+{
+
+}
+
+<span class="directive">void</span> on_trackbar_h(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
+{
+    l1= h_slider-l_slider;
+    l2= h_slider+l_slider;
+}
+
+<span class="directive">void</span> on_trackbar_l(<span class="predefined-type">int</span>, <span class="directive">void</span>* )
+{
+    l1= h_slider-l_slider;
+    l2= h_slider+l_slider;
+}
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv)
+{
+    VideoCapture cap(<span class="integer">0</span>);
+    Mat img;
+    cap &gt;&gt; img;
+<span class="comment">//    resize(img,img,Size(640,480));</span>
+    Mat borrada= img.clone();
+    Mat result= Mat::zeros(Size(<span class="integer">640</span>,<span class="integer">480</span>), CV_8UC3);
+
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
+        GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
+
+    namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, <span class="integer">1</span>);
+    h_max= img.size().height;
+    sprintf(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">Altura    %d</span><span class="delimiter">&quot;</span></span>, h_max);
+    createTrackbar(TrackbarH, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;h_slider, h_max, on_trackbar_h);
+    on_trackbar_h(h_slider, <span class="integer">0</span>);
+
+    l_max= img.size().height;
+    sprintf(TrackbarL, <span class="string"><span class="delimiter">&quot;</span><span class="content">Largura %d</span><span class="delimiter">&quot;</span></span>, l_max);
+    createTrackbar(TrackbarL, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;l_slider, l_max, on_trackbar_l);
+    on_trackbar_l(l_slider, <span class="integer">0</span>);
+
+    createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">Forca</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;d_slider, d_max, on_trackbar_d);
+    on_trackbar_d(d_slider, <span class="integer">0</span>);
+
+    <span class="keyword">while</span>(<span class="integer">1</span>)
+    {
+        Mat img;
+        cap &gt;&gt; img;
+        borrada= img.clone();
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">10</span>; i++)
+            GaussianBlur(borrada, borrada, Size(<span class="integer">9</span>,<span class="integer">9</span>),<span class="integer">0</span>,<span class="integer">0</span>);
+
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;img.size().height; i++)
+            addWeighted(img.row(i),alphaPeso(i,l1,l2,d_slider),borrada.row(i),<span class="integer">1</span>-alphaPeso(i,l1,l2,d_slider),<span class="integer">0</span>,result.row(i));
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) != -<span class="integer">1</span>) <span class="keyword">break</span>;
+    }
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">resultado.jpg</span><span class="delimiter">&quot;</span></span>,result);
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultado</div>
+<p><span class="image"><img src="TiltShiftVideo//resultado.jpg" alt="resultado"></span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_bibliografia">Bibliografia</h2>
 <div class="sectionbody">
 <div class="ulist bibliography">
@@ -1271,7 +1475,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-08 22:52:39 BRT
+Last updated 2016-09-18 10:50:22 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">
