@@ -1443,7 +1443,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 
     createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">Forca</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>, &amp;d_slider, d_max, on_trackbar_d);
     on_trackbar_d(d_slider, <span class="integer">0</span>);
-
+    <span class="comment">// configura posicao do tilt-shift</span>
     <span class="keyword">while</span>(<span class="integer">1</span>)
     {
         <span class="keyword">if</span>(img.empty())
@@ -1457,6 +1457,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">imr</span><span class="delimiter">&quot;</span></span>,result);
         <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) == <span class="integer">27</span>) <span class="keyword">break</span>;
     }
+    <span class="comment">// comeca a gravar</span>
     <span class="keyword">while</span>(<span class="integer">1</span>)
     {
         <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;<span class="integer">4</span>; i++)
