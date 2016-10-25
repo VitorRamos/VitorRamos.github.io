@@ -508,7 +508,7 @@ table.CodeRay td.code>pre{padding:0}
 .CodeRay .head .head{color:#f4f}
 </style>
 </head>
-<body class="article toc2 toc-right">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>Processamento Digital de Imagens Exercicios</h1>
 <div id="toc" class="toc2">
@@ -541,6 +541,16 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#_tiltshift">TiltShift</a></li>
 <li><a href="#_tiltshift_com_video">TiltShift com video</a></li>
+</ul>
+</li>
+<li><a href="#_filtragem_no_domínio_da_frequência">Filtragem no domínio da frequência</a>
+<ul class="sectlevel2">
+<li><a href="#_filtro_homomorfico">Filtro Homomorfico</a></li>
+</ul>
+</li>
+<li><a href="#_canny">Canny</a>
+<ul class="sectlevel2">
+<li><a href="#_canny_e_a_arte_com_pontilhismo">Canny e a arte com pontilhismo</a></li>
 </ul>
 </li>
 <li><a href="#_bibliografia">Bibliografia</a></li>
@@ -1501,6 +1511,321 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 </div>
 <div class="sect1">
+<h2 id="_filtragem_no_domínio_da_frequência">Filtragem no domínio da frequência</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_filtro_homomorfico">Filtro Homomorfico</h3>
+<div class="paragraph">
+<p>Utilizando o programa exemplos/dft.cpp como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.</p>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/imgproc/imgproc.hpp&gt;</span>
+
+<span class="preprocessor">#define</span> RADIUS <span class="integer">5</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+Mat complexImage;
+Mat padded, filter;
+Mat image, imagegray, tmp;
+Mat_&lt;<span class="predefined-type">float</span>&gt; realInput, zeros;
+vector&lt;Mat&gt; planos;
+<span class="predefined-type">char</span> key;
+<span class="predefined-type">int</span> dft_M, dft_N;
+
+<span class="predefined-type">int</span> gammaL, gammaLmax=<span class="integer">100</span>;
+<span class="predefined-type">int</span> gammaH, gammaHmax=<span class="integer">100</span>;
+<span class="predefined-type">int</span> D0, D0max=<span class="integer">100</span>;
+
+<span class="directive">void</span> CalculaFiltro(<span class="predefined-type">int</span>, <span class="directive">void</span>*)
+{
+    <span class="predefined-type">int</span> dft_M= tmp.size().height;
+    <span class="predefined-type">int</span> dft_N= tmp.size().width;
+    <span class="predefined-type">double</span> gH= gammaH/<span class="integer">1</span><span class="float">0</span><span class="float">.0</span>;
+    <span class="predefined-type">double</span> gL= gammaL/<span class="integer">1</span><span class="float">0</span><span class="float">.0</span>;
+    <span class="predefined-type">double</span> d0= D0/<span class="integer">1</span><span class="float">0</span><span class="float">.0</span>;
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;dft_M; i++)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;dft_N; j++)
+        {
+            <span class="predefined-type">double</span> D= pow(i-dft_M/<span class="integer">2</span>,<span class="integer">2</span>)+pow(j-dft_N/<span class="integer">2</span>, <span class="integer">2</span>);
+            tmp.at&lt;<span class="predefined-type">float</span>&gt; (i,j) = (gH-gL)*(<span class="integer">1</span>-exp(-D/pow(d0,<span class="integer">2</span>)))+gL;
+        }
+    }
+    Mat comps[]= {tmp, tmp};
+    merge(comps, <span class="integer">2</span>, filter);
+}
+
+<span class="comment">// troca os quadrantes da imagem da DFT</span>
+<span class="directive">void</span> deslocaDFT(Mat&amp; image )
+{
+    Mat tmp, A, B, C, D;
+
+    <span class="comment">// se a imagem tiver tamanho impar, recorta a regiao para</span>
+    <span class="comment">// evitar cÃ³pias de tamanho desigual</span>
+    image = image(Rect(<span class="integer">0</span>, <span class="integer">0</span>, image.cols &amp; -<span class="integer">2</span>, image.rows &amp; -<span class="integer">2</span>));
+    <span class="predefined-type">int</span> cx = image.cols/<span class="integer">2</span>;
+    <span class="predefined-type">int</span> cy = image.rows/<span class="integer">2</span>;
+
+    <span class="comment">// reorganiza os quadrantes da transformada</span>
+    <span class="comment">// A B   -&gt;  D C</span>
+    <span class="comment">// C D       B A</span>
+    A = image(Rect(<span class="integer">0</span>, <span class="integer">0</span>, cx, cy));
+    B = image(Rect(cx, <span class="integer">0</span>, cx, cy));
+    C = image(Rect(<span class="integer">0</span>, cy, cx, cy));
+    D = image(Rect(cx, cy, cx, cy));
+
+    <span class="comment">// A &lt;-&gt; D</span>
+    A.copyTo(tmp);
+    D.copyTo(A);
+    tmp.copyTo(D);
+
+    <span class="comment">// C &lt;-&gt; B</span>
+    C.copyTo(tmp);
+    B.copyTo(C);
+    tmp.copyTo(B);
+}
+
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span>, <span class="predefined-type">char</span>**)
+{
+    VideoCapture cap;
+
+    namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, CV_WINDOW_AUTOSIZE);
+    createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">GammaH</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;gammaH, gammaHmax, CalculaFiltro);
+    createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">GammaL</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;gammaL, gammaLmax, CalculaFiltro);
+    createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">D0</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;D0, D0max, CalculaFiltro);
+
+    cap.open(<span class="integer">0</span>);
+    <span class="keyword">if</span>(!cap.isOpened())
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+
+<span class="comment">//    image= imread(&quot;input.png&quot;, CV_LOAD_IMAGE_COLOR);</span>
+    cap &gt;&gt; image;
+
+    dft_M = getOptimalDFTSize(image.rows);
+    dft_N = getOptimalDFTSize(image.cols);
+
+
+    copyMakeBorder(image, padded, <span class="integer">0</span>, dft_M - image.rows, <span class="integer">0</span>, dft_N - image.cols, BORDER_CONSTANT, Scalar::all(<span class="integer">0</span>));
+
+    <span class="comment">// parte imaginaria da matriz complexa (preenchida com zeros)</span>
+    zeros = Mat_&lt;<span class="predefined-type">float</span>&gt;::zeros(padded.size());
+
+    <span class="comment">// prepara a matriz complexa para ser preenchida</span>
+    complexImage = Mat(padded.size(), CV_32FC2, Scalar(<span class="integer">0</span>));
+
+    <span class="comment">// a funÃ§Ã£o de transferÃªncia (filtro frequencial) deve ter o</span>
+    <span class="comment">// mesmo tamanho e tipo da matriz complexa</span>
+    filter = complexImage.clone();
+
+    <span class="comment">// cria uma matriz temporÃ¡ria para criar as componentes real</span>
+    <span class="comment">// e imaginaria do filtro ideal</span>
+    tmp = Mat(dft_M, dft_N, CV_32F);
+
+    <span class="comment">// prepara o filtro passa-baixas ideal</span>
+
+
+    <span class="comment">// cria a matriz com as componentes do filtro e junta</span>
+    <span class="comment">// ambas em uma matriz multicanal complexa</span>
+
+    <span class="keyword">for</span>(;;)
+    {
+        cap &gt;&gt; image;
+        cvtColor(image, imagegray, CV_BGR2GRAY);
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">original</span><span class="delimiter">&quot;</span></span>, imagegray);
+
+        <span class="comment">// realiza o padding da imagem</span>
+        copyMakeBorder(imagegray, padded, <span class="integer">0</span>,
+                       dft_M - image.rows, <span class="integer">0</span>,
+                       dft_N - image.cols,
+                       BORDER_CONSTANT, Scalar::all(<span class="integer">0</span>));
+
+        <span class="comment">// limpa o array de matrizes que vao compor a</span>
+        <span class="comment">// imagem complexa</span>
+        planos.clear();
+        <span class="comment">// cria a compoente real</span>
+        realInput = Mat_&lt;<span class="predefined-type">float</span>&gt;(padded);
+
+        realInput += Scalar::all(<span class="integer">1</span>);
+        log(realInput, realInput);
+        <span class="comment">// insere as duas componentes no array de matrizes</span>
+        planos.push_back(realInput);
+        planos.push_back(zeros);
+
+        <span class="comment">// combina o array de matrizes em uma unica</span>
+        <span class="comment">// componente complexa</span>
+        merge(planos, complexImage);
+
+        <span class="comment">// calcula o dft</span>
+        dft(complexImage, complexImage);
+
+        <span class="comment">// realiza a troca de quadrantes</span>
+        deslocaDFT(complexImage);
+
+        <span class="comment">// aplica o filtro frequencial</span>
+        mulSpectrums(complexImage,filter,complexImage,<span class="integer">0</span>);
+
+        <span class="comment">// troca novamente os quadrantes</span>
+        deslocaDFT(complexImage);
+
+        <span class="comment">// calcula a DFT inversa</span>
+        idft(complexImage, complexImage, DFT_SCALE);
+
+        <span class="comment">// limpa o array de planos</span>
+        planos.clear();
+
+        <span class="comment">// separa as partes real e imaginaria da</span>
+        <span class="comment">// imagem filtrada</span>
+        split(complexImage, planos);
+        exp(planos[<span class="integer">0</span>], planos[<span class="integer">0</span>]);
+
+        <span class="comment">// normaliza a parte real para exibicao</span>
+        normalize(planos[<span class="integer">0</span>], planos[<span class="integer">0</span>], <span class="integer">0</span>, <span class="integer">1</span>, CV_MINMAX);
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, planos[<span class="integer">0</span>]);
+
+        key = (<span class="predefined-type">char</span>) waitKey(<span class="integer">10</span>);
+        <span class="keyword">if</span>( key == <span class="integer">27</span> ) <span class="keyword">break</span>; <span class="comment">// esc pressed!</span>
+    }
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_canny">Canny</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_canny_e_a_arte_com_pontilhismo">Canny e a arte com pontilhismo</h3>
+<div class="paragraph">
+<p>Utilizando os programas exemplos/canny.cpp e exemplos/pontilhismo.cpp como referência, implemente um programa cannypoints.cpp. A idéia é usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. A forma como a informação de borda será usada é livre. Entretanto, são apresentadas algumas sugestões de técnicas que poderiam ser utilizadas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Desenhar pontos grandes na imagem pontilhista básica.</p>
+</li>
+<li>
+<p>Usar a posição dos pixels de borda encontrados pelo algoritmo de Canny para desenhar pontos nos respectivos locais na imagem gerada.</p>
+</li>
+<li>
+<p>Experimente ir aumentando os limiares do algoritmo de Canny e, para cada novo par de limiares, desenhar círculos cada vez menores nas posições encontradas. A Figura Pontilhismo aplicado à imagem Lena foi desenvolvida usando essa técnica.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">O Codigo</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;vector&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;algorithm&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;time.h&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+
+<span class="preprocessor">#define</span> STEP <span class="integer">2</span>
+<span class="preprocessor">#define</span> JITTER <span class="integer">2</span>
+<span class="preprocessor">#define</span> RAIO <span class="integer">3</span>
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv)
+{
+
+    vector&lt;<span class="predefined-type">int</span>&gt; yrange;
+    vector&lt;<span class="predefined-type">int</span>&gt; xrange;
+
+    Mat image, points;
+
+    <span class="predefined-type">int</span> width, height;
+    <span class="predefined-type">int</span> x, y;
+
+    Vec3b gray;
+
+    image= imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">abc.jpg</span><span class="delimiter">&quot;</span></span>,CV_LOAD_IMAGE_COLOR);
+
+    srand(time(<span class="predefined-constant">NULL</span>));
+
+    <span class="keyword">if</span>(!image.data)
+    {
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">nao abriu</span><span class="delimiter">&quot;</span></span> &lt;&lt; argv[<span class="integer">1</span>] &lt;&lt; endl;
+        cout &lt;&lt; argv[<span class="integer">0</span>] &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> imagem.jpg</span><span class="delimiter">&quot;</span></span>;
+        exit(<span class="integer">0</span>);
+    }
+
+    width=image.size().width;
+    height=image.size().height;
+
+    xrange.resize(height/STEP);
+    yrange.resize(width/STEP);
+
+    iota(xrange.begin(), xrange.end(), <span class="integer">0</span>);
+    iota(yrange.begin(), yrange.end(), <span class="integer">0</span>);
+
+    <span class="keyword">for</span>(uint i=<span class="integer">0</span>; i&lt;xrange.size(); i++)
+    {
+        xrange[i]= xrange[i]*STEP+STEP/<span class="integer">2</span>;
+    }
+
+    <span class="keyword">for</span>(uint i=<span class="integer">0</span>; i&lt;yrange.size(); i++)
+    {
+        yrange[i]= yrange[i]*STEP+STEP/<span class="integer">2</span>;
+    }
+
+    points = Mat(height, width, CV_8UC3, Scalar(<span class="integer">255</span>,<span class="integer">255</span>,<span class="integer">255</span>));
+
+    random_shuffle(xrange.begin(), xrange.end());
+
+    <span class="keyword">for</span>(<span class="directive">auto</span> i : xrange)
+    {
+        random_shuffle(yrange.begin(), yrange.end());
+        <span class="keyword">for</span>(<span class="directive">auto</span> j : yrange)
+        {
+            x = i+rand()%(<span class="integer">2</span>*JITTER)-JITTER+<span class="integer">1</span>;
+            y = j+rand()%(<span class="integer">2</span>*JITTER)-JITTER+<span class="integer">1</span>;
+            gray = image.at&lt;Vec3b&gt;(x,y);
+            circle(points, Point(y,x), RAIO, CV_RGB(gray[<span class="integer">2</span>],gray[<span class="integer">1</span>],gray[<span class="integer">0</span>]), -<span class="integer">1</span>, CV_AA);
+        }
+    }
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">Antes.jpg</span><span class="delimiter">&quot;</span></span>, points);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Antes</span><span class="delimiter">&quot;</span></span>, points);
+    Mat grayImg, borrada, bordas;
+    cvtColor(image, grayImg, CV_BGR2GRAY);
+    GaussianBlur(grayImg, borrada, Size(<span class="integer">3</span>,<span class="integer">3</span>), <span class="integer">25</span>, <span class="integer">25</span>);
+    Canny(borrada, bordas, <span class="integer">150</span>, <span class="integer">50</span>);
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=JITTER; i&lt;bordas.size().width-JITTER; i++)
+    {
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=JITTER; j&lt;bordas.size().height-JITTER; j++)
+        {
+            <span class="keyword">if</span>(bordas.at&lt;uchar&gt;(j,i) == <span class="integer">255</span>)
+            {
+                x = i+rand()%(<span class="integer">2</span>*JITTER)-JITTER+<span class="integer">1</span>;
+                y = j+rand()%(<span class="integer">2</span>*JITTER)-JITTER+<span class="integer">1</span>;
+                gray = image.at&lt;Vec3b&gt;(y,x);
+                circle(points, Point(x,y), <span class="integer">1</span>, CV_RGB(gray[<span class="integer">2</span>],gray[<span class="integer">1</span>],gray[<span class="integer">0</span>]), -<span class="integer">1</span>, CV_AA);
+            }
+        }
+    }
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Depois</span><span class="delimiter">&quot;</span></span>, points);
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">Depois.jpg</span><span class="delimiter">&quot;</span></span>, points);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Canny</span><span class="delimiter">&quot;</span></span>, bordas);
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">Canny.jpg</span><span class="delimiter">&quot;</span></span>, bordas);
+    waitKey(<span class="integer">0</span>);
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_bibliografia">Bibliografia</h2>
 <div class="sectionbody">
 <div class="ulist bibliography">
@@ -1518,7 +1843,7 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-20 10:17:21 BRT
+Last updated 2016-10-24 21:16:02 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">
