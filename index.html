@@ -1516,7 +1516,14 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 <div class="sect2">
 <h3 id="_filtro_homomorfico">Filtro Homomorfico</h3>
 <div class="paragraph">
-<p>Utilizando o programa exemplos/dft.cpp como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.</p>
+<p><span class="red">Problema</span>:
+	Utilizando o programa exemplos_dft.cpp como referência, Implementar o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.</p>
+</div>
+<div class="paragraph">
+<p><span class="green">Teoria</span>: Aplicar logaritimo na imagem para atuar separadamente nas componentes reflectancia e iluminação, pois a iluminação apresenta um perfil de baixas frequencias e a reflectancia altas frequencias, assim ao aplicar log na imagem e passar o filtro passa alta modificado teremos um efeito maior na componente de iluminação, assim foi feito o esquema a seguir:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="FiltroHomomorfico//diagrama.png" alt="diagrama"></span></p>
 </div>
 <div class="listingblock">
 <div class="title">O Codigo</div>
@@ -1524,8 +1531,6 @@ Para testar o codigo foram criados objetos com mais de um buraco e o programa co
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
 <span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
 <span class="preprocessor">#include</span> <span class="include">&lt;opencv2/imgproc/imgproc.hpp&gt;</span>
-
-<span class="preprocessor">#define</span> RADIUS <span class="integer">5</span>
 
 <span class="directive">using</span> <span class="keyword">namespace</span> cv;
 <span class="directive">using</span> <span class="keyword">namespace</span> std;
@@ -1535,28 +1540,35 @@ Mat padded, filter;
 Mat image, imagegray, tmp;
 Mat_&lt;<span class="predefined-type">float</span>&gt; realInput, zeros;
 vector&lt;Mat&gt; planos;
+
 <span class="predefined-type">char</span> key;
 <span class="predefined-type">int</span> dft_M, dft_N;
-
 <span class="predefined-type">int</span> gammaL, gammaLmax=<span class="integer">100</span>;
 <span class="predefined-type">int</span> gammaH, gammaHmax=<span class="integer">100</span>;
 <span class="predefined-type">int</span> D0, D0max=<span class="integer">100</span>;
+<span class="predefined-type">int</span> C0, C0max= <span class="integer">100</span>;
 
 <span class="directive">void</span> CalculaFiltro(<span class="predefined-type">int</span>, <span class="directive">void</span>*)
 {
     <span class="predefined-type">int</span> dft_M= tmp.size().height;
     <span class="predefined-type">int</span> dft_N= tmp.size().width;
+    <span class="comment">// calculo dos parametros</span>
+    <span class="comment">// variacao de 0-10</span>
     <span class="predefined-type">double</span> gH= gammaH/<span class="integer">1</span><span class="float">0</span><span class="float">.0</span>;
     <span class="predefined-type">double</span> gL= gammaL/<span class="integer">1</span><span class="float">0</span><span class="float">.0</span>;
     <span class="predefined-type">double</span> d0= D0/<span class="integer">1</span><span class="float">0</span><span class="float">.0</span>;
+    <span class="comment">// variacao 0-0.1</span>
+    <span class="predefined-type">double</span> c0= C0/<span class="integer">100</span><span class="float">0</span><span class="float">.0</span>;
+    <span class="comment">// calcula componentes do filtro</span>
     <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;dft_M; i++)
     {
         <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;dft_N; j++)
         {
             <span class="predefined-type">double</span> D= pow(i-dft_M/<span class="integer">2</span>,<span class="integer">2</span>)+pow(j-dft_N/<span class="integer">2</span>, <span class="integer">2</span>);
-            tmp.at&lt;<span class="predefined-type">float</span>&gt; (i,j) = (gH-gL)*(<span class="integer">1</span>-exp(-D/pow(d0,<span class="integer">2</span>)))+gL;
+            tmp.at&lt;<span class="predefined-type">float</span>&gt; (i,j) = (gH-gL)*(<span class="integer">1</span>-exp(-c0*D/pow(d0,<span class="integer">2</span>)))+gL;
         }
     }
+    <span class="comment">// junta os planos imaginario e real</span>
     Mat comps[]= {tmp, tmp};
     merge(comps, <span class="integer">2</span>, filter);
 }
@@ -1594,24 +1606,23 @@ vector&lt;Mat&gt; planos;
 
 <span class="predefined-type">int</span> main(<span class="predefined-type">int</span>, <span class="predefined-type">char</span>**)
 {
-    VideoCapture cap;
-
+    <span class="comment">// cria Janelas e sliders</span>
     namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, CV_WINDOW_AUTOSIZE);
     createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">GammaH</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;gammaH, gammaHmax, CalculaFiltro);
     createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">GammaL</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;gammaL, gammaLmax, CalculaFiltro);
     createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">D0</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;D0, D0max, CalculaFiltro);
+    createTrackbar(<span class="string"><span class="delimiter">&quot;</span><span class="content">C0</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, &amp;C0, C0max, CalculaFiltro);
 
-    cap.open(<span class="integer">0</span>);
-    <span class="keyword">if</span>(!cap.isOpened())
-        <span class="keyword">return</span> -<span class="integer">1</span>;
+    <span class="comment">// carrega imagem</span>
+    image= imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">pessoas3.jpg</span><span class="delimiter">&quot;</span></span>, CV_LOAD_IMAGE_GRAYSCALE);
+    resize(image, image, Size(<span class="integer">640</span>,<span class="integer">480</span>));
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">original.png</span><span class="delimiter">&quot;</span></span>, image);
 
-<span class="comment">//    image= imread(&quot;input.png&quot;, CV_LOAD_IMAGE_COLOR);</span>
-    cap &gt;&gt; image;
-
+    <span class="comment">// tamanho para algoritimo da dft</span>
     dft_M = getOptimalDFTSize(image.rows);
     dft_N = getOptimalDFTSize(image.cols);
 
-
+    <span class="comment">// padding</span>
     copyMakeBorder(image, padded, <span class="integer">0</span>, dft_M - image.rows, <span class="integer">0</span>, dft_N - image.cols, BORDER_CONSTANT, Scalar::all(<span class="integer">0</span>));
 
     <span class="comment">// parte imaginaria da matriz complexa (preenchida com zeros)</span>
@@ -1623,21 +1634,12 @@ vector&lt;Mat&gt; planos;
     <span class="comment">// a funÃ§Ã£o de transferÃªncia (filtro frequencial) deve ter o</span>
     <span class="comment">// mesmo tamanho e tipo da matriz complexa</span>
     filter = complexImage.clone();
-
-    <span class="comment">// cria uma matriz temporÃ¡ria para criar as componentes real</span>
-    <span class="comment">// e imaginaria do filtro ideal</span>
     tmp = Mat(dft_M, dft_N, CV_32F);
 
-    <span class="comment">// prepara o filtro passa-baixas ideal</span>
-
-
-    <span class="comment">// cria a matriz com as componentes do filtro e junta</span>
-    <span class="comment">// ambas em uma matriz multicanal complexa</span>
-
-    <span class="keyword">for</span>(;;)
+    <span class="keyword">while</span>(<span class="integer">1</span>)
     {
-        cap &gt;&gt; image;
-        cvtColor(image, imagegray, CV_BGR2GRAY);
+        imagegray= image.clone();
+
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">original</span><span class="delimiter">&quot;</span></span>, imagegray);
 
         <span class="comment">// realiza o padding da imagem</span>
@@ -1652,8 +1654,11 @@ vector&lt;Mat&gt; planos;
         <span class="comment">// cria a compoente real</span>
         realInput = Mat_&lt;<span class="predefined-type">float</span>&gt;(padded);
 
+        <span class="comment">// soma com 1 para evitar problemas de log(0) o erro e minimo</span>
         realInput += Scalar::all(<span class="integer">1</span>);
+        <span class="comment">// calcula o log da imagem</span>
         log(realInput, realInput);
+
         <span class="comment">// insere as duas componentes no array de matrizes</span>
         planos.push_back(realInput);
         planos.push_back(zeros);
@@ -1683,6 +1688,7 @@ vector&lt;Mat&gt; planos;
         <span class="comment">// separa as partes real e imaginaria da</span>
         <span class="comment">// imagem filtrada</span>
         split(complexImage, planos);
+        <span class="comment">// calcular expodencial</span>
         exp(planos[<span class="integer">0</span>], planos[<span class="integer">0</span>]);
 
         <span class="comment">// normaliza a parte real para exibicao</span>
@@ -1690,11 +1696,46 @@ vector&lt;Mat&gt; planos;
         imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada</span><span class="delimiter">&quot;</span></span>, planos[<span class="integer">0</span>]);
 
         key = (<span class="predefined-type">char</span>) waitKey(<span class="integer">10</span>);
-        <span class="keyword">if</span>( key == <span class="integer">27</span> ) <span class="keyword">break</span>; <span class="comment">// esc pressed!</span>
+        <span class="keyword">if</span>( key == <span class="integer">27</span> )
+            <span class="keyword">break</span>; <span class="comment">// esc pressed</span>
     }
+    Mat res;
+    <span class="comment">// converte para uchar para salvar</span>
+    planos[<span class="integer">0</span>].convertTo(res, CV_8UC1, <span class="integer">25</span><span class="float">5</span><span class="float">.0</span>);
+    <span class="comment">// salva</span>
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtrada.png</span><span class="delimiter">&quot;</span></span>, res);
+    <span class="comment">// mostra parte real do filtro</span>
+    vector&lt;Mat&gt; pFiltro;
+    split(filter,pFiltro);
+    normalize(pFiltro[<span class="integer">0</span>], pFiltro[<span class="integer">0</span>], <span class="integer">0</span>, <span class="integer">1</span>, CV_MINMAX);
+    <span class="comment">// converte para uchar para salvar</span>
+    pFiltro[<span class="integer">0</span>].convertTo(res, CV_8UC1, <span class="integer">25</span><span class="float">5</span><span class="float">.0</span>);
+    imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtro.png</span><span class="delimiter">&quot;</span></span>, res);
+    waitKey(<span class="integer">0</span>);
+
     <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<div class="title">Filtro</div>
+<p><span class="image"><img src="FiltroHomomorfico//filtro.png" alt="filtro"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado 1 Comparação</div>
+<p><span class="image"><img src="FiltroHomomorfico//juntas.png" alt="juntas"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado 2</div>
+<p><span class="image"><img src="FiltroHomomorfico//homo2.png" alt="homo2"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado 3</div>
+<p><span class="image"><img src="FiltroHomomorfico//homo3.png" alt="homo3"></span></p>
+</div>
+<div class="paragraph">
+<div class="title">Resultado 4</div>
+<p><span class="image"><img src="FiltroHomomorfico//homo4.png" alt="homo4"></span></p>
 </div>
 </div>
 </div>
@@ -1705,7 +1746,8 @@ vector&lt;Mat&gt; planos;
 <div class="sect2">
 <h3 id="_canny_e_a_arte_com_pontilhismo">Canny e a arte com pontilhismo</h3>
 <div class="paragraph">
-<p>Utilizando os programas exemplos/canny.cpp e exemplos/pontilhismo.cpp como referência, implemente um programa cannypoints.cpp. A idéia é usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. A forma como a informação de borda será usada é livre. Entretanto, são apresentadas algumas sugestões de técnicas que poderiam ser utilizadas:</p>
+<p><span class="red">Problema</span>:
+	Utilizando os programas exemplos/canny.cpp e exemplos/pontilhismo.cpp como referência, implemente um programa cannypoints.cpp. A idéia é usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. A forma como a informação de borda será usada é livre. Entretanto, são apresentadas algumas sugestões de técnicas que poderiam ser utilizadas:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1719,6 +1761,9 @@ vector&lt;Mat&gt; planos;
 <p>Experimente ir aumentando os limiares do algoritmo de Canny e, para cada novo par de limiares, desenhar círculos cada vez menores nas posições encontradas. A Figura Pontilhismo aplicado à imagem Lena foi desenvolvida usando essa técnica.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p><span class="green">Metodo</span>: Ao aplicar o filtro de canny em cada ponto da borda desenhar um circulo de raio menor</p>
 </div>
 <div class="listingblock">
 <div class="title">O Codigo</div>
@@ -1859,7 +1904,7 @@ vector&lt;Mat&gt; planos;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-10-24 21:22:03 BRT
+Last updated 2016-10-25 22:18:44 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">

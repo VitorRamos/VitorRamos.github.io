@@ -2,8 +2,6 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#define RADIUS 5
-
 using namespace cv;
 using namespace std;
 
@@ -12,28 +10,35 @@ Mat padded, filter;
 Mat image, imagegray, tmp;
 Mat_<float> realInput, zeros;
 vector<Mat> planos;
+
 char key;
 int dft_M, dft_N;
-
 int gammaL, gammaLmax=100;
 int gammaH, gammaHmax=100;
 int D0, D0max=100;
+int C0, C0max= 100;
 
 void CalculaFiltro(int, void*)
 {
     int dft_M= tmp.size().height;
     int dft_N= tmp.size().width;
+    // calculo dos parametros
+    // variacao de 0-10
     double gH= gammaH/10.0;
     double gL= gammaL/10.0;
     double d0= D0/10.0;
+    // variacao 0-0.1
+    double c0= C0/1000.0;
+    // calcula componentes do filtro
     for(int i=0; i<dft_M; i++)
     {
         for(int j=0; j<dft_N; j++)
         {
             double D= pow(i-dft_M/2,2)+pow(j-dft_N/2, 2);
-            tmp.at<float> (i,j) = (gH-gL)*(1-exp(-D/pow(d0,2)))+gL;
+            tmp.at<float> (i,j) = (gH-gL)*(1-exp(-c0*D/pow(d0,2)))+gL;
         }
     }
+    // junta os planos imaginario e real
     Mat comps[]= {tmp, tmp};
     merge(comps, 2, filter);
 }
@@ -71,24 +76,23 @@ void deslocaDFT(Mat& image )
 
 int main(int, char**)
 {
-    VideoCapture cap;
-
+    // cria Janelas e sliders
     namedWindow("filtrada", CV_WINDOW_AUTOSIZE);
     createTrackbar("GammaH", "filtrada", &gammaH, gammaHmax, CalculaFiltro);
     createTrackbar("GammaL", "filtrada", &gammaL, gammaLmax, CalculaFiltro);
     createTrackbar("D0", "filtrada", &D0, D0max, CalculaFiltro);
+    createTrackbar("C0", "filtrada", &C0, C0max, CalculaFiltro);
 
-    cap.open(0);
-    if(!cap.isOpened())
-        return -1;
+    // carrega imagem
+    image= imread("pessoas3.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    resize(image, image, Size(640,480));
+    imwrite("original.png", image);
 
-//    image= imread("input.png", CV_LOAD_IMAGE_COLOR);
-    cap >> image;
-
+    // tamanho para algoritimo da dft
     dft_M = getOptimalDFTSize(image.rows);
     dft_N = getOptimalDFTSize(image.cols);
 
-
+    // padding
     copyMakeBorder(image, padded, 0, dft_M - image.rows, 0, dft_N - image.cols, BORDER_CONSTANT, Scalar::all(0));
 
     // parte imaginaria da matriz complexa (preenchida com zeros)
@@ -100,21 +104,12 @@ int main(int, char**)
     // a funÃ§Ã£o de transferÃªncia (filtro frequencial) deve ter o
     // mesmo tamanho e tipo da matriz complexa
     filter = complexImage.clone();
-
-    // cria uma matriz temporÃ¡ria para criar as componentes real
-    // e imaginaria do filtro ideal
     tmp = Mat(dft_M, dft_N, CV_32F);
 
-    // prepara o filtro passa-baixas ideal
-
-
-    // cria a matriz com as componentes do filtro e junta
-    // ambas em uma matriz multicanal complexa
-
-    for(;;)
+    while(1)
     {
-        cap >> image;
-        cvtColor(image, imagegray, CV_BGR2GRAY);
+        imagegray= image.clone();
+
         imshow("original", imagegray);
 
         // realiza o padding da imagem
@@ -129,8 +124,11 @@ int main(int, char**)
         // cria a compoente real
         realInput = Mat_<float>(padded);
 
+        // soma com 1 para evitar problemas de log(0) o erro e minimo
         realInput += Scalar::all(1);
+        // calcula o log da imagem
         log(realInput, realInput);
+
         // insere as duas componentes no array de matrizes
         planos.push_back(realInput);
         planos.push_back(zeros);
@@ -160,6 +158,7 @@ int main(int, char**)
         // separa as partes real e imaginaria da
         // imagem filtrada
         split(complexImage, planos);
+        // calcular expodencial
         exp(planos[0], planos[0]);
 
         // normaliza a parte real para exibicao
@@ -167,7 +166,22 @@ int main(int, char**)
         imshow("filtrada", planos[0]);
 
         key = (char) waitKey(10);
-        if( key == 27 ) break; // esc pressed!
+        if( key == 27 )
+            break; // esc pressed
     }
+    Mat res;
+    // converte para uchar para salvar
+    planos[0].convertTo(res, CV_8UC1, 255.0);
+    // salva
+    imwrite("filtrada.png", res);
+    // mostra parte real do filtro
+    vector<Mat> pFiltro;
+    split(filter,pFiltro);
+    normalize(pFiltro[0], pFiltro[0], 0, 1, CV_MINMAX);
+    // converte para uchar para salvar
+    pFiltro[0].convertTo(res, CV_8UC1, 255.0);
+    imwrite("filtro.png", res);
+    waitKey(0);
+
     return 0;
 }
